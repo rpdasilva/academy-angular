@@ -3,12 +3,14 @@ const winston = require('winston');
 const express = require('express');
 const expressWinston = require('express-winston');
 const sqlite3 = require('sqlite3');
+const path = require('path');
 
 // Main objects.
 const port = 3654;
-const path = 'db.sqlite3';
+const db_path = path.join(__dirname, 'db.sqlite3');
+console.log('database file path', db_path);
 const app = express();
-const db = new sqlite3.Database(path, sqlite3.OPEN_READWRITE, (err) => {
+const db = new sqlite3.Database(db_path, sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
 	console.log(`DATABASE ERROR ${err}`);
     }
