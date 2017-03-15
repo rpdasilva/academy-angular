@@ -35,6 +35,7 @@ app.get('/', (req, res, next) => {
     <ul>
       <li><a href="/courses">/courses</a></li>
       <li><a href="/offerings">/offerings</a></li>
+      <li><a href="/classes/1">/classes/1</a></li>
     </ul>
   </body>
 </html>
@@ -45,8 +46,11 @@ app.get('/', (req, res, next) => {
 // => [{'course_ident': integer, 'course_name': string}, ...]
 app.get('/courses', (req, res, next) => {
     const query = `
-select Course.ident as course_ident, Course.name as course_name
-from Course;
+select
+    Course.ident as course_ident,
+    Course.name  as course_name
+from
+    Course;
     `;
     db.all(query, (err, rows) => {
 	if (err) return next(err);
@@ -54,16 +58,46 @@ from Course;
     });
 });
 
-// List all
+// List all offerings of all courses.
 // => [{'course_ident': integer, 'course_name': string, 'offering_ident': integer}]
 app.get('/offerings', (req, res, next) => {
     const query = `
-select Course.ident as course_ident, Course.name as course_name, Offering.ident as offering_ident
-from Course join Offering
-on Offering.course=Course.ident
+select
+    Course.ident   as course_ident,
+    Course.name    as course_name,
+    Offering.ident as offering_ident
+from
+    Course join Offering
+on
+    Offering.course = Course.ident
     `;
     db.all(query, (err, rows) => {
-	console.log(rows);
+	if (err) return next(err);
+	res.status(200).json(rows);
+    });
+});
+
+// List all classes for a particular offering.
+// => [{'course_ident': integer, 'course_name': string, 'offering_ident': integer,
+//      'class_ident': integer, 'calendar': date, 'starting': time}]
+app.get('/classes/:q_course_ident', (req, res, next) => {
+    const query = `
+select
+    Course.ident   as course_ident,
+    Course.name    as course_name,
+    Offering.ident as offering_ident,
+    Class.ident    as class_ident,
+    Class.calendar as calendar,
+    Class.starting as starting
+from
+    Course join Offering join Class
+on
+    Course.ident   = Offering.course and
+    Offering.ident = Class.offering
+where
+    Course.ident   = ?
+    `;
+    db.all(query, [req.params.q_course_ident], (err, rows) => {
 	if (err) return next(err);
 	res.status(200).json(rows);
     });
