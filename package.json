@@ -1,0 +1,25 @@
+{
+  "name": "courses",
+  "version": "1.0.0",
+  "description": "Keep track of courses offered and who's done what",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gvwilson/courses.git"
+  },
+  "author": "Greg Wilson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gvwilson/courses/issues"
+  },
+  "homepage": "https://github.com/gvwilson/courses#readme",
+  "dependencies": {
+    "express": "^4.15.2",
+    "express-winston": "^2.3.0",
+    "sqlite3": "^3.1.8",
+    "winston": "^2.3.1"
+  }
+}
