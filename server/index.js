@@ -8,7 +8,6 @@ const path = require('path');
 // Main objects.
 const port = 3654;
 const db_path = path.join(__dirname, 'db.sqlite3');
-console.log('database file path', db_path);
 const app = express();
 const db = new sqlite3.Database(db_path, sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
