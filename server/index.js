@@ -7,7 +7,7 @@ const path = require('path');
 
 // Main objects.
 const port = 3654;
-const db_path = path.join(__dirname, 'db.sqlite3');
+const db_path = path.join(__dirname, 'courses.db');
 const app = express();
 const db = new sqlite3.Database(db_path, sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
@@ -35,7 +35,7 @@ app.get('/', (req, res, next) => {
   <body>
     <ul>
       <li><a href="/courses">/courses</a></li>
-      <li><a href="/offerings/2">/offerings/2</a></li>
+      <li><a href="/offerings/UX200">/offerings/UX200</a></li>
       <li><a href="/classes/3">/classes/3</a></li>
     </ul>
   </body>
@@ -75,12 +75,13 @@ from
     Course join Offering join Class
 on
     Offering.course = Course.ident and
-    Course.ident = Class.offering
+    Offering.ident = Class.offering
 where
     Course.ident = ?
 group by
     Offering.ident
     `;
+    console.log('course ident', req.params.q_course_ident);
     db.all(query, [req.params.q_course_ident], (err, rows) => {
 	if (err) return next(err);
 	res.status(200).json(rows);

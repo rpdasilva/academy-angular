@@ -3,7 +3,7 @@
 # Miscellaneous
 *~
 *.log
-*.sqlite3
+*.db
 
 # compiled output
 /dist
