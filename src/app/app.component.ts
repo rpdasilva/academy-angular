@@ -10,9 +10,7 @@ export class AppComponent {
 
   // Test data.
   courses: Object[] = [
-    {"course_ident": 1,
-     "course_name": "Bugs"},
-    {"course_ident": 2,
-     "course_name": "Confusion"}
+    {"course_ident":"BUGS101","course_name":"Writing Bugs for Fun and Profit"},
+    {"course_ident":"UX200","course_name":"Creating Confusing User Interfaces"}
   ];
 }
