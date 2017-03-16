@@ -32,8 +32,8 @@ insert into Class values(2, 2, '2017-01-03', '13:00'); -- BUGS101 #2 only class
 insert into Class values(3, 3, '2017-01-04', '09:00'); -- BUGS101 #3 class 1
 insert into Class values(4, 3, '2017-01-04', '14:00'); -- BUGS101 #3 class 2
 insert into Class values(5, 4, '2017-01-03', '13:00'); -- UX200 #1 only class
-insert into Class values(6, 4, '2017-02-15', '10:00'); -- UX200 #2 class 2
-insert into Class values(7, 4, '2017-02-14', '10:00'); -- UX200 #2 class 1 (out of order)
+insert into Class values(6, 5, '2017-02-15', '10:00'); -- UX200 #2 class 2
+insert into Class values(7, 5, '2017-02-14', '10:00'); -- UX200 #2 class 1 (out of order)
 
 -- All people that have ever existed.
 create table Person(
