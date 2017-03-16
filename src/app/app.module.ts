@@ -8,6 +8,7 @@ import { CoursesComponent } from './courses/courses.component';
 import { OfferingsComponent } from './offerings/offerings.component';
 import { ClassesComponent } from './classes/classes.component';
 import { CoursesService } from './courses.service';
+import { OfferingsService } from './offerings.service';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { CoursesService } from './courses.service';
     HttpModule
   ],
   providers: [
-    CoursesService
+    CoursesService,
+    OfferingsService
   ],
   bootstrap: [AppComponent]
 })

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { OfferingsService } from '../offerings.service';
 
 @Component({
   selector: 'app-offerings',
@@ -7,18 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class OfferingsComponent implements OnInit {
 
-  // Test data.
-  offerings: Object[] = [
-    {"course_ident":"UX200","course_name":"Creating Confusing User Interfaces",
-     "offering_ident":4,"start_date":"2017-01-03"},
-    {"course_ident":"UX200","course_name":"Creating Confusing User Interfaces",
-     "offering_ident":5,"start_date":"2017-02-14"}
-  ];
+  offerings: Object[];
 
-  constructor() {
+  constructor(private offeringsService: OfferingsService) {
   }
 
   ngOnInit() {
+    this.offerings = this.offeringsService.getData();
   }
 
 }

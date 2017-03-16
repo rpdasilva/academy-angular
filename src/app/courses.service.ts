@@ -8,12 +8,10 @@ export class CoursesService {
     {"course_ident":"UX200","course_name":"Creating Confusing User Interfaces"}
   ];
 
+  constructor() { }
   
   getData(): Object[] {
-    console.log('CoursesService.getData');
     return this.courses;
   }
-
-  constructor() { }
 
 }
