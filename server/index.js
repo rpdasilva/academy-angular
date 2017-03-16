@@ -4,6 +4,7 @@ const express = require('express');
 const expressWinston = require('express-winston');
 const sqlite3 = require('sqlite3');
 const path = require('path');
+const cors = require('cors'); // https://github.com/rangle/hub/wiki/CORS
 
 // Main objects.
 const port = 3654;
@@ -14,6 +15,9 @@ const db = new sqlite3.Database(db_path, sqlite3.OPEN_READWRITE, (err) => {
 	console.log(`DATABASE ERROR ${err}`);
     }
 });
+
+// Tell server to accept cross-origin requests.
+app.use(cors());
 
 // Set up logging.
 app.use(expressWinston.logger({
