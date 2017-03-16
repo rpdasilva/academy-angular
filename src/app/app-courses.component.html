@@ -1,0 +1,11 @@
+<h2>{{courses.length}} Courses</h2>
+<table border="1">
+  <tr>
+    <th>Course Identifier</th>
+    <th>Course Name</th>
+  </tr>
+  <tr *ngFor="let rec of courses">
+    <td>{{rec.course_ident}}</td>
+    <td>{{rec.course_name}}</td>
+  </tr>
+</table>

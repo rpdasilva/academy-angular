@@ -1,49 +1,5 @@
 <div>
-  <h2>{{courses.length}} Courses</h2>
-  <table border="1">
-    <tr>
-      <th>Course Identifier</th>
-      <th>Course Name</th>
-    </tr>
-    <tr *ngFor="let rec of courses">
-      <td>{{rec.course_ident}}</td>
-      <td>{{rec.course_name}}</td>
-    </tr>
-  </table>
-
-  <h2>{{offerings.length}} Offerings</h2>
-  <table border="1">
-    <tr>
-      <th>Course Identifier</th>
-      <th>Course Name</th>
-      <th>Offering Identifier</th>
-      <th>Start Date</th>
-    </tr>
-    <tr *ngFor="let rec of offerings">
-      <td>{{rec.course_ident}}</td>
-      <td>{{rec.course_name}}</td>
-      <td>{{rec.offering_ident}}</td>
-      <td>{{rec.start_date}}</td>
-    </tr>
-  </table>
-
-  <h2>{{classes.length}} Classes</h2>
-  <table border="1">
-    <tr>
-      <th>Course Identifier</th>
-      <th>Course Name</th>
-      <th>Offering Identifier</th>
-      <th>Class Identifier</th>
-      <th>Date</th>
-      <th>Start Time</th>
-    </tr>
-    <tr *ngFor="let rec of classes">
-      <td>{{rec.course_ident}}</td>
-      <td>{{rec.course_name}}</td>
-      <td>{{rec.offering_ident}}</td>
-      <td>{{rec.class_ident}}</td>
-      <td>{{rec.calendar}}</td>
-      <td>{{rec.starting}}</td>
-    </tr>
-  </table>
+  <app-courses></app-courses>
+  <app-offerings></app-offerings>
+  <app-classes></app-classes>
 </div>

@@ -1,0 +1,19 @@
+<h2>{{classes.length}} Classes</h2>
+<table border="1">
+  <tr>
+    <th>Course Identifier</th>
+    <th>Course Name</th>
+    <th>Offering Identifier</th>
+    <th>Class Identifier</th>
+    <th>Date</th>
+    <th>Start Time</th>
+  </tr>
+  <tr *ngFor="let rec of classes">
+    <td>{{rec.course_ident}}</td>
+    <td>{{rec.course_name}}</td>
+    <td>{{rec.offering_ident}}</td>
+    <td>{{rec.class_ident}}</td>
+    <td>{{rec.calendar}}</td>
+    <td>{{rec.starting}}</td>
+  </tr>
+</table>
