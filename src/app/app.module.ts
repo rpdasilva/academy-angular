@@ -9,6 +9,7 @@ import { OfferingsComponent } from './offerings/offerings.component';
 import { ClassesComponent } from './classes/classes.component';
 import { CoursesService } from './courses.service';
 import { OfferingsService } from './offerings.service';
+import { ClassesService } from './classes.service';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { OfferingsService } from './offerings.service';
   ],
   providers: [
     CoursesService,
-    OfferingsService
+    OfferingsService,
+    ClassesService
   ],
   bootstrap: [AppComponent]
 })
