@@ -85,7 +85,6 @@ where
 group by
     Offering.ident
     `;
-    console.log('course ident', req.params.q_course_ident);
     db.all(query, [req.params.q_course_ident], (err, rows) => {
 	if (err) return next(err);
 	res.status(200).json(rows);
