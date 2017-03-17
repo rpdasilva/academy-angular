@@ -1,17 +1,15 @@
 import { Injectable } from '@angular/core';
+import { Http } from '@angular/http';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/map';
 
 @Injectable()
 export class CoursesService {
 
-  private courses: Object[] = [
-    {"course_ident":"BUGS101","course_name":"Writing Bugs for Fun and Profit"},
-    {"course_ident":"UX200","course_name":"Creating Confusing User Interfaces"}
-  ];
-
-  constructor() { }
+  constructor(private http: Http) { }
   
-  getData(): Object[] {
-    return this.courses;
+  getData(): Observable<any> {
+    return this.http.get('http://localhost:3654/courses/').map(res => res.json());
   }
 
 }

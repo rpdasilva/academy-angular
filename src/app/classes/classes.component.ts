@@ -8,13 +8,14 @@ import { ClassesService } from '../classes.service';
 })
 export class ClassesComponent implements OnInit {
 
-  classes: Object[];
+  classes: Object[] = [];
 
   constructor(private classesService: ClassesService) {
   }
 
   ngOnInit() {
-    this.classes = this.classesService.getData();
+    this.classesService.getData().subscribe(
+      body => {this.classes = body;});
   }
 
 }

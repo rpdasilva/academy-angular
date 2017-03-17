@@ -1,19 +1,15 @@
 import { Injectable } from '@angular/core';
+import { Http } from '@angular/http';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/map';
 
 @Injectable()
 export class OfferingsService {
 
-  private offerings: Object[] = [
-    {"course_ident":"UX200","course_name":"Creating Confusing User Interfaces",
-     "offering_ident":4,"start_date":"2017-01-03"},
-    {"course_ident":"UX200","course_name":"Creating Confusing User Interfaces",
-     "offering_ident":5,"start_date":"2017-02-14"}
-  ];
+  constructor(private http: Http) { }
 
-  constructor() { }
-
-  getData(): Object[] {
-    return this.offerings;
+  getData(): Observable<any> {
+    return this.http.get('http://localhost:3654/offerings/UX200').map(res => res.json());
   }
 
 }
