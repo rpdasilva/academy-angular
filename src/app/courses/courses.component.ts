@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CoursesService } from '../courses.service';
+import { DataFetcherService } from '../data-fetcher.service';
 
 @Component({
   selector: 'app-courses',
@@ -10,11 +10,11 @@ export class CoursesComponent implements OnInit {
 
   courses: Object[] = [];
 
-  constructor(private coursesService: CoursesService) {
+  constructor(private dataFetcher: DataFetcherService) {
   }
 
   ngOnInit() {
-    this.coursesService.getData().subscribe(
+    this.dataFetcher.getData('http://localhost:3654/courses').subscribe(
       body => {this.courses = body;});
   }
 
