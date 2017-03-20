@@ -6,6 +6,6 @@
   </tr>
   <tr *ngFor="let rec of courses">
     <td>{{rec.course_ident}}</td>
-    <td>{{rec.course_name}}</td>
+    <td><input [(ngModel)]="rec.course_name" placeholder="{{rec.course_name}}" size="60" /></td>
   </tr>
 </table>
