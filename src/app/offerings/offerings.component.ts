@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DataFetcherService } from '../data-fetcher.service';
+import { StoreService } from '../store.service';
 
 @Component({
   selector: 'app-offerings',
@@ -10,7 +11,10 @@ export class OfferingsComponent implements OnInit {
 
   offerings: Object[] = [];
 
-  constructor(private dataFetcher: DataFetcherService) {
+  constructor(
+    private dataFetcher: DataFetcherService,
+    private store: StoreService
+  ) {
   }
 
   ngOnInit() {

@@ -5,7 +5,7 @@
     <th>Course Name</th>
   </tr>
   <tr *ngFor="let rec of courses">
-    <td>{{rec.course_ident}}</td>
+    <td (click)="onSelect(rec)">{{rec.course_ident}}</td>
     <td><input [(ngModel)]="rec.course_name" placeholder="{{rec.course_name}}" size="60" /></td>
   </tr>
 </table>

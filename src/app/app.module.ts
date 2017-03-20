@@ -8,6 +8,7 @@ import { CoursesComponent } from './courses/courses.component';
 import { OfferingsComponent } from './offerings/offerings.component';
 import { ClassesComponent } from './classes/classes.component';
 import { DataFetcherService } from './data-fetcher.service';
+import { StoreService } from './store.service';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { DataFetcherService } from './data-fetcher.service';
     HttpModule
   ],
   providers: [
-    DataFetcherService
+    DataFetcherService,
+    StoreService
   ],
   bootstrap: [AppComponent]
 })
