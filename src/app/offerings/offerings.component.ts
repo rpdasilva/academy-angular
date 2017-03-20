@@ -10,6 +10,7 @@ import { StoreService, NOT_SET } from '../store.service';
 export class OfferingsComponent implements OnInit {
 
   offerings: Object[] = [];
+  courseName: '';
   visible = false;
 
   constructor(
@@ -23,11 +24,12 @@ export class OfferingsComponent implements OnInit {
       if (courseIdent == NOT_SET){
 	this.visible = false;
 	this.offerings = [];
+	this.courseName = '';
       }
       else {
 	this.visible = true;
 	this.dataFetcher.getData(`http://localhost:3654/offerings/${courseIdent}`).subscribe(
-	  body => {this.offerings = body;});
+	  body => {this.offerings = body; this.courseName = body[0].course_name});
       }
     });
   }

@@ -11,6 +11,8 @@ export class ClassesComponent implements OnInit {
 
   classes: Object[] = [];
   visible = false;
+  offeringIdent = NOT_SET;
+  courseName = '';
 
   constructor(
     private dataFetcher: DataFetcherService,
@@ -23,11 +25,17 @@ export class ClassesComponent implements OnInit {
       if (offeringIdent == NOT_SET) {
 	this.visible = false;
 	this.classes = [];
+	this.offeringIdent = NOT_SET;
+	this.courseName = '';
       }
       else {
 	this.visible = true;
 	this.dataFetcher.getData(`http://localhost:3654/classes/${offeringIdent}`).subscribe(
-	  body => {this.classes = body;});
+	  body => {
+	    this.classes = body;
+	    this.offeringIdent = body[0].offering_ident;
+	    this.courseName = body[0].course_name;
+	  });
       }
     });
   }

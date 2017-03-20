@@ -1,15 +1,11 @@
 <div *ngIf="visible">
-  <h2>{{offerings.length}} Offerings</h2>
+  <p>{{offerings.length}} Offerings of "{{courseName}}"</p>
   <table border="1">
     <tr>
-      <th>Course Identifier</th>
-      <th>Course Name</th>
       <th>Offering Identifier</th>
       <th>Start Date</th>
     </tr>
     <tr *ngFor="let rec of offerings">
-      <td (click)="onSelect(rec)">{{rec.course_ident}}</td>
-      <td (click)="onSelect(rec)">{{rec.course_name}}</td>
       <td (click)="onSelect(rec)">{{rec.offering_ident}}</td>
       <td (click)="onSelect(rec)">{{rec.start_date}}</td>
     </tr>
