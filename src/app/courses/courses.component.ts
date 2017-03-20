@@ -22,10 +22,8 @@ export class CoursesComponent implements OnInit {
       body => {this.courses = body;});
   }
 
-  onSelect(course) {
-    console.log('course selected:', course);
-    this.store.currentCourse = course.course_ident;
-    console.log('...store course ident:', this.store.currentCourse);
+  onSelect(rec) {
+    this.store.currentCourse = rec.course_ident;
   }
 
 }

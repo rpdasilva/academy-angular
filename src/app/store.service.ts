@@ -4,6 +4,8 @@ import { Injectable } from '@angular/core';
 export class StoreService {
 
   currentCourse: number = -1;
+  currentOffering: number = -1;
+  currentClass: number = -1;
 
   constructor() { }
 

@@ -22,4 +22,8 @@ export class OfferingsComponent implements OnInit {
       body => {this.offerings = body;});
   }
 
+  onSelect(rec) {
+    this.store.currentOffering = rec.offering_ident;
+  }
+
 }

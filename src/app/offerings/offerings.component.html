@@ -1,17 +1,17 @@
 <div *ngIf="store.currentCourse >= 0">
-<h2>{{offerings.length}} Offerings</h2>
-<table border="1">
-  <tr>
-    <th>Course Identifier</th>
-    <th>Course Name</th>
-    <th>Offering Identifier</th>
-    <th>Start Date</th>
-  </tr>
-  <tr *ngFor="let rec of offerings">
-    <td>{{rec.course_ident}}</td>
-    <td>{{rec.course_name}}</td>
-    <td>{{rec.offering_ident}}</td>
-    <td>{{rec.start_date}}</td>
-  </tr>
-</table>
+  <h2>{{offerings.length}} Offerings</h2>
+  <table border="1">
+    <tr>
+      <th>Course Identifier</th>
+      <th>Course Name</th>
+      <th>Offering Identifier</th>
+      <th>Start Date</th>
+    </tr>
+    <tr *ngFor="let rec of offerings">
+      <td (click)="onSelect(rec)">{{rec.course_ident}}</td>
+      <td>{{rec.course_name}}</td>
+      <td>{{rec.offering_ident}}</td>
+      <td>{{rec.start_date}}</td>
+    </tr>
+  </table>
 </div>
