@@ -1,4 +1,4 @@
-<div *ngIf="store.currentCourse >= 0">
+<div *ngIf="visible">
   <h2>{{offerings.length}} Offerings</h2>
   <table border="1">
     <tr>
@@ -9,9 +9,9 @@
     </tr>
     <tr *ngFor="let rec of offerings">
       <td (click)="onSelect(rec)">{{rec.course_ident}}</td>
-      <td>{{rec.course_name}}</td>
-      <td>{{rec.offering_ident}}</td>
-      <td>{{rec.start_date}}</td>
+      <td (click)="onSelect(rec)">{{rec.course_name}}</td>
+      <td (click)="onSelect(rec)">{{rec.offering_ident}}</td>
+      <td (click)="onSelect(rec)">{{rec.start_date}}</td>
     </tr>
   </table>
 </div>

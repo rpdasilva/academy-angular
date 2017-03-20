@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DataFetcherService } from '../data-fetcher.service';
-import { StoreService } from '../store.service';
+import { StoreService, NOT_SET } from '../store.service';
 
 @Component({
   selector: 'app-offerings',
@@ -10,6 +10,7 @@ import { StoreService } from '../store.service';
 export class OfferingsComponent implements OnInit {
 
   offerings: Object[] = [];
+  visible = false;
 
   constructor(
     private dataFetcher: DataFetcherService,
@@ -18,12 +19,21 @@ export class OfferingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.dataFetcher.getData('http://localhost:3654/offerings/2').subscribe(
-      body => {this.offerings = body;});
+    this.store.currentCourse.subscribe((courseIdent) => {
+      if (courseIdent == NOT_SET){
+	this.visible = false;
+	this.offerings = [];
+      }
+      else {
+	this.visible = true;
+	this.dataFetcher.getData(`http://localhost:3654/offerings/${courseIdent}`).subscribe(
+	  body => {this.offerings = body;});
+      }
+    });
   }
 
   onSelect(rec) {
-    this.store.currentOffering = rec.offering_ident;
+    this.store.setCurrentOffering(rec.offering_ident);
   }
 
 }

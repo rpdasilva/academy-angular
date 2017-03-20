@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DataFetcherService } from '../data-fetcher.service';
-import { StoreService } from '../store.service';
+import { StoreService, NOT_SET } from '../store.service';
 
 @Component({
   selector: 'app-courses',
@@ -23,7 +23,7 @@ export class CoursesComponent implements OnInit {
   }
 
   onSelect(rec) {
-    this.store.currentCourse = rec.course_ident;
+    this.store.setCurrentCourse(rec.course_ident);
   }
 
 }
