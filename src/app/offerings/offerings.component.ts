@@ -14,7 +14,7 @@ export class OfferingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.dataFetcher.getData('http://localhost:3654/offerings/UX200').subscribe(
+    this.dataFetcher.getData('http://localhost:3654/offerings/2').subscribe(
       body => {this.offerings = body;});
   }
 
