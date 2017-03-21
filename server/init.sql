@@ -1,7 +1,7 @@
 -- All courses that have ever existed.
 create table Course(
 	ident		integer unique not null primary key,
-	name		text not null
+	name		text unique not null
 );
 
 insert into Course values(1, "Writing Bugs for Fun and Profit");
