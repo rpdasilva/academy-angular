@@ -26,4 +26,8 @@ export class CoursesComponent implements OnInit {
     this.store.setCurrentCourse(rec.course_ident);
   }
 
+  newCourse() {
+    this.courses.push({'course_ident': 999, 'course_name': ''});
+  }
+
 }
