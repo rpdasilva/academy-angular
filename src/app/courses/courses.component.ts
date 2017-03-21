@@ -29,13 +29,10 @@ export class CoursesComponent implements OnInit {
 
   onNewCourse(name) {
     this.backend.addCourse(name).subscribe(
-      (response) => {
-	if (response.hasOwnProperty('error')) {
-	  console.log(response.payload);
-	}
-	else {
-	  this.courses.push(response.payload);
-	}
+      ({success, payload}) => {
+        success ?
+          this.courses = [...this.courses, payload] :
+          console.log('Handle error', payload);
       });
   }
 
