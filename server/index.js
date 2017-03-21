@@ -72,16 +72,21 @@ from
 // FIXME: docs
 app.post('/courses', (req, res, next) => {
     let code = 0, rows = {};
-    const query = `
+    const q_insert = `
 insert into Course(name) values(?);
     `;
-    db.run(query, ['Philip is helpful'], (err, rows) => {
+    const q_get = `
+select last_insert_rowid() as ident;
+    `;
+    name = 'Philip is helpful';
+    db.run(q_insert, [name], (err, rows) => {
 	if (err) return next(err);
-	else {
+	db.get(q_get, (err, rows) => {
+	    if (err) return next(err);
 	    code = 201;
-	    rows = {'course_ident': 999, 'course_name': 'Philip is helpful'};
-	}
-        res.status(code).json(rows);
+	    rows = {'course_ident': rows['ident'], 'course_name': name};
+            res.status(code).json(rows);
+	});
     });
 });
 
