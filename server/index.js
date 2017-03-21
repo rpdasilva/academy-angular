@@ -70,17 +70,15 @@ from
 // / + {'course_name': name} =>
 // {'course_ident': ident, 'course_name': name}
 app.post('/courses', (req, res, next) => {
-    const query_insert = `insert into Course(name) values(?);`;
-    const query_select = `select last_insert_rowid() as ident;`;
+    const query_insert = `
+insert into Course(name) values(?);
+    `;
     const name = req.body.course_name;
-    db.run(query_insert, [name], (err, rows) => {
+    db.run(query_insert, [name], function(err, rows) {
 	if (err) return next(err);
-	db.get(query_select, (err, rows) => {
-	    if (err) return next(err);
-	    code = 201;
-	    rows = {'course_ident': rows['ident'], 'course_name': name};
-            res.status(code).json(rows);
-	});
+	const code = 201;
+	const result = {'course_ident': this.lastID, 'course_name': name};
+        res.status(code).json(result);
     });
 });
 
