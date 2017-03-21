@@ -71,7 +71,18 @@ from
 // Add a course
 // FIXME: docs
 app.post('/courses', (req, res, next) => {
-    res.status(201).json({'course_ident': 999, 'course_name': 'Philip is helpful'});
+    let code = 0, rows = {};
+    const query = `
+insert into Course(name) values(?);
+    `;
+    db.run(query, ['Philip is helpful'], (err, rows) => {
+	if (err) return next(err);
+	else {
+	    code = 201;
+	    rows = {'course_ident': 999, 'course_name': 'Philip is helpful'};
+	}
+        res.status(code).json(rows);
+    });
 });
 
 // List all offerings of a course.

@@ -29,7 +29,7 @@ export class CoursesComponent implements OnInit {
 
   onNewCourse(name) {
     this.backend.addCourse(name).subscribe(
-      body => {console.log('received', body);});
+      body => {this.courses.push(body)});
   }
 
 }
