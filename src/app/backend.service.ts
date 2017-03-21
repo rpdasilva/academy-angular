@@ -3,6 +3,7 @@ import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 
+
 @Injectable()
 export class BackendService {
 
@@ -21,8 +22,8 @@ export class BackendService {
   addCourse(courseName: string): Observable<any> {
     const body = {'course_name': courseName};
     return this.http.post(this.base + '/courses', body)
-      .map(res => res.json())
-      .catch(res => ({error: 'SERVER ERROR'}));
+      .map(res => ({success: true, payload: res.json()}))
+      .catch(err => Observable.of({success: false, payload: 'SERVER ERROR'}));
   }
 
   getOfferings(courseIdent: number): Observable<any> {
