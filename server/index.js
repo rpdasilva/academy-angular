@@ -12,9 +12,7 @@ const port = 3654;
 const db_path = path.join(__dirname, 'academy.db');
 const app = express();
 const db = new sqlite3.Database(db_path, sqlite3.OPEN_READWRITE, (err) => {
-    if (err) {
-	console.log(`DATABASE ERROR ${err}`);
-    }
+    if (err) console.log(`DATABASE ERROR ${err}`);
 });
 
 // Tell server to accept cross-origin requests.
@@ -55,14 +53,14 @@ app.get('/', (req, res, next) => {
 // / =>
 // [{course_ident, course_name}, ...]
 app.get('/courses', (req, res, next) => {
-    const query = `
+    const query_select = `
 select
     Course.ident	as course_ident,
     Course.name		as course_name
 from
     Course;
     `;
-    db.all(query, (err, rows) => {
+    db.all(query_select, (err, rows) => {
 	if (err) return next(err);
 	res.status(200).json(rows);
     });
@@ -72,10 +70,9 @@ from
 // / + {'course_name': name} =>
 // {'course_ident': ident, 'course_name': name}
 app.post('/courses', (req, res, next) => {
-    let code = 0, rows = {};
     const query_insert = `insert into Course(name) values(?);`;
     const query_select = `select last_insert_rowid() as ident;`;
-    name = 'Philip is helpful';
+    const name = req.body.course_name;
     db.run(query_insert, [name], (err, rows) => {
 	if (err) return next(err);
 	db.get(query_select, (err, rows) => {
@@ -92,7 +89,7 @@ app.post('/courses', (req, res, next) => {
 // [{course_ident, course_name, offering_ident, start_date}, ...]
 // where 'start_date' is the date of the earliest class.
 app.get('/offerings/:q_course_ident', (req, res, next) => {
-    const query = `
+    const query_select = `
 select
     Course.ident	as course_ident,
     Course.name		as course_name,
@@ -108,7 +105,7 @@ where
 group by
     Offering.ident
     `;
-    db.all(query, [req.params.q_course_ident], (err, rows) => {
+    db.all(query_select, [req.params.q_course_ident], (err, rows) => {
 	if (err) return next(err);
 	res.status(200).json(rows);
     });
@@ -118,7 +115,7 @@ group by
 // /classes/{offering_ident} =>
 // [{course_ident, course_name, offering_ident, class_ident, calendar, starting}, ...]
 app.get('/classes/:q_offering_ident', (req, res, next) => {
-    const query = `
+    const query_select = `
 select
     Course.ident	as course_ident,
     Course.name		as course_name,
@@ -134,7 +131,7 @@ on
 where
     Offering.ident = ?
     `;
-    db.all(query, [req.params.q_offering_ident], (err, rows) => {
+    db.all(query_select, [req.params.q_offering_ident], (err, rows) => {
 	if (err) return next(err);
 	res.status(200).json(rows);
     });
