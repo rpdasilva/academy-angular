@@ -30,9 +30,12 @@ export class CoursesComponent implements OnInit {
   onNewCourse(name) {
     this.backend.addCourse(name).subscribe(
       ({success, payload}) => {
-        success ?
-          this.courses = [...this.courses, payload] :
+	if (success) {
+          this.courses = [...this.courses, payload];
+	}
+	else {
           console.log('Handle error', payload);
+	}
       });
   }
 
