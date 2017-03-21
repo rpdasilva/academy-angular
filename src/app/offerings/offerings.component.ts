@@ -28,7 +28,7 @@ export class OfferingsComponent implements OnInit {
       }
       else {
 	this.visible = true;
-	this.backend.getData(`http://localhost:3654/offerings/${courseIdent}`).subscribe(
+	this.backend.getOfferings(courseIdent).subscribe(
 	  body => {this.offerings = body; this.courseName = body[0].course_name});
       }
     });

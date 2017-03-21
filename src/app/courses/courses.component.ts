@@ -19,7 +19,7 @@ export class CoursesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.backend.getData('http://localhost:3654/courses').subscribe(
+    this.backend.getCourses().subscribe(
       body => {this.courses = body;});
   }
 

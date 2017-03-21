@@ -30,7 +30,7 @@ export class ClassesComponent implements OnInit {
       }
       else {
 	this.visible = true;
-	this.backend.getData(`http://localhost:3654/classes/${offeringIdent}`).subscribe(
+	this.backend.getClasses(offeringIdent).subscribe(
 	  body => {
 	    this.classes = body;
 	    this.offeringIdent = body[0].offering_ident;

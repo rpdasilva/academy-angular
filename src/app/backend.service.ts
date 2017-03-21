@@ -6,16 +6,29 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class BackendService {
 
+  private base = 'http://localhost:3654';
+
   constructor(private http: Http) { }
 
-  getData(url: string): Observable<any> {
+  private getData(url: string): Observable<any> {
     return this.http.get(url).map(res => res.json());
   }
 
+  getCourses(): Observable<any> {
+    return this.getData(`${this.base}/courses`);
+  }
+
   addCourse(courseName: string): Observable<any> {
-    const url = 'http://localhost:3654/courses';
     const body = {'course_name': courseName};
-    return this.http.post(url, body).map(res => res.json());
+    return this.http.post(this.base + '/courses', body).map(res => res.json());
+  }
+
+  getOfferings(courseIdent: number): Observable<any> {
+    return this.getData(`${this.base}/offerings/${courseIdent}`)
+  }
+
+  getClasses(offeringIdent: number): Observable<any> {
+    return this.getData(`${this.base}/classes/${offeringIdent}`);
   }
 
 }
