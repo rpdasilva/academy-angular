@@ -11,6 +11,7 @@ export class CoursesComponent implements OnInit {
 
   courses: Object[] = [];
   newCourseName: string;
+  errorMessage: string = '';
 
   constructor(
     private backend: BackendService,
@@ -25,6 +26,7 @@ export class CoursesComponent implements OnInit {
 
   onSelectCourse(rec) {
     this.store.setCurrentCourse(rec.course_ident);
+    this.errorMessage = '';
   }
 
   onNewCourse(name) {
@@ -32,9 +34,10 @@ export class CoursesComponent implements OnInit {
       ({success, payload}) => {
 	if (success) {
           this.courses = [...this.courses, payload];
+	  this.errorMessage = '';
 	}
 	else {
-          console.log('Handle error', payload);
+	  this.errorMessage = payload;
 	}
       });
   }
