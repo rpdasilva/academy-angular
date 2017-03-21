@@ -8,7 +8,7 @@ const cors = require('cors'); // https://github.com/rangle/hub/wiki/CORS
 
 // Main objects.
 const port = 3654;
-const db_path = path.join(__dirname, 'courses.db');
+const db_path = path.join(__dirname, 'academy.db');
 const app = express();
 const db = new sqlite3.Database(db_path, sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
