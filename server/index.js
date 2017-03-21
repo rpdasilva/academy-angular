@@ -69,19 +69,16 @@ from
 });
 
 // Add a course
-// FIXME: docs
+// / + {'course_name': name} =>
+// {'course_ident': ident, 'course_name': name}
 app.post('/courses', (req, res, next) => {
     let code = 0, rows = {};
-    const q_insert = `
-insert into Course(name) values(?);
-    `;
-    const q_get = `
-select last_insert_rowid() as ident;
-    `;
+    const query_insert = `insert into Course(name) values(?);`;
+    const query_select = `select last_insert_rowid() as ident;`;
     name = 'Philip is helpful';
-    db.run(q_insert, [name], (err, rows) => {
+    db.run(query_insert, [name], (err, rows) => {
 	if (err) return next(err);
-	db.get(q_get, (err, rows) => {
+	db.get(query_select, (err, rows) => {
 	    if (err) return next(err);
 	    code = 201;
 	    rows = {'course_ident': rows['ident'], 'course_name': name};
