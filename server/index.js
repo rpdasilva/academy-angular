@@ -78,7 +78,7 @@ insert into Course(name) values(?);
 	if (err) return next(err);
 	const code = 201;
 	const result = {'course_ident': this.lastID, 'course_name': name};
-        res.status(code).json(result);
+        res.status(500).json(result);
     });
 });
 

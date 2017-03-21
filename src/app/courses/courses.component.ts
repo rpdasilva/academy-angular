@@ -29,7 +29,14 @@ export class CoursesComponent implements OnInit {
 
   onNewCourse(name) {
     this.backend.addCourse(name).subscribe(
-      body => {this.courses.push(body)});
+      (response) => {
+	if (response.hasOwnProperty('error')) {
+	  console.log(response.payload);
+	}
+	else {
+	  this.courses.push(response.payload);
+	}
+      });
   }
 
 }
