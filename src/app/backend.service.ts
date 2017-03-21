@@ -4,7 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 
 @Injectable()
-export class DataFetcherService {
+export class BackendService {
 
   constructor(private http: Http) { }
 

@@ -7,7 +7,7 @@ import { AppComponent } from './app.component';
 import { CoursesComponent } from './courses/courses.component';
 import { OfferingsComponent } from './offerings/offerings.component';
 import { ClassesComponent } from './classes/classes.component';
-import { DataFetcherService } from './data-fetcher.service';
+import { BackendService } from './backend.service';
 import { StoreService } from './store.service';
 
 @NgModule({
@@ -23,7 +23,7 @@ import { StoreService } from './store.service';
     HttpModule
   ],
   providers: [
-    DataFetcherService,
+    BackendService,
     StoreService
   ],
   bootstrap: [AppComponent]

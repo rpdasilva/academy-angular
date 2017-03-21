@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DataFetcherService } from '../data-fetcher.service';
+import { BackendService } from '../backend.service';
 import { StoreService, NOT_SET } from '../store.service';
 
 @Component({
@@ -15,7 +15,7 @@ export class ClassesComponent implements OnInit {
   courseName = '';
 
   constructor(
-    private dataFetcher: DataFetcherService,
+    private backend: BackendService,
     private store: StoreService
   ) {
   }
@@ -30,7 +30,7 @@ export class ClassesComponent implements OnInit {
       }
       else {
 	this.visible = true;
-	this.dataFetcher.getData(`http://localhost:3654/classes/${offeringIdent}`).subscribe(
+	this.backend.getData(`http://localhost:3654/classes/${offeringIdent}`).subscribe(
 	  body => {
 	    this.classes = body;
 	    this.offeringIdent = body[0].offering_ident;
