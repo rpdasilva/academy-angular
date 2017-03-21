@@ -43,8 +43,8 @@ app.get('/', (req, res, next) => {
   <body>
     <ul>
       <li><a href="/courses">/courses</a></li>
-      <li><a href="/offerings/UX200">/offerings/UX200</a></li>
-      <li><a href="/classes/3">/classes/3</a></li>
+      <li><a href="/offerings/1">/offerings/1</a></li>
+      <li><a href="/classes/1">/classes/1</a></li>
     </ul>
   </body>
 </html>
