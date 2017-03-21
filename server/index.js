@@ -1,6 +1,7 @@
 // Load required modules.
 const winston = require('winston');
 const express = require('express');
+const bodyParser = require('body-parser');
 const expressWinston = require('express-winston');
 const sqlite3 = require('sqlite3');
 const path = require('path');
@@ -18,6 +19,9 @@ const db = new sqlite3.Database(db_path, sqlite3.OPEN_READWRITE, (err) => {
 
 // Tell server to accept cross-origin requests.
 app.use(cors());
+
+// And tell the app to convert POST bodies to JSON.
+app.use(bodyParser.json());
 
 // Set up logging.
 app.use(expressWinston.logger({
@@ -62,6 +66,12 @@ from
 	if (err) return next(err);
 	res.status(200).json(rows);
     });
+});
+
+// Add a course
+// FIXME: docs
+app.post('/courses', (req, res, next) => {
+    res.status(201).json({'course_ident': 999, 'course_name': 'Philip is helpful'});
 });
 
 // List all offerings of a course.

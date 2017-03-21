@@ -12,4 +12,10 @@ export class BackendService {
     return this.http.get(url).map(res => res.json());
   }
 
+  addCourse(courseName: string): Observable<any> {
+    const url = 'http://localhost:3654/courses';
+    const body = {'course_name': courseName};
+    return this.http.post(url, body).map(res => res.json());
+  }
+
 }

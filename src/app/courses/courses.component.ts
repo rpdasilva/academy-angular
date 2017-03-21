@@ -28,10 +28,8 @@ export class CoursesComponent implements OnInit {
   }
 
   onNewCourse(name) {
-    this.courses.push({
-      'course_ident': 999,
-      'course_name': 'actual new course name'
-    });
+    this.backend.addCourse(name).subscribe(
+      body => {console.log('received', body);});
   }
 
 }
