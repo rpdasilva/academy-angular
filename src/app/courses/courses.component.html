@@ -9,9 +9,9 @@
       <td (click)="onSelectCourse(rec)">{{rec.course_ident}}</td>
       <td><input [(ngModel)]="rec.course_name" placeholder="{{rec.course_name}}" size="60" /></td>
     </tr>
-    <tr>
-      <td><button (click)="onNewCourse()">New</button></td>
-      <td><input placeholder="new course name" size="60"/></td>
-    </tr>
   </table>
+  <p>
+    <button (click)="onNewCourse()">New</button>
+    <input [(ngModel)]="newCourseName" placeholder="new course name" size="60"/>
+  </p>
 </div>

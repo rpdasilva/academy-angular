@@ -10,6 +10,7 @@ import { StoreService, NOT_SET } from '../store.service';
 export class CoursesComponent implements OnInit {
 
   courses: Object[] = [];
+  newCourseName: string;
 
   constructor(
     private dataFetcher: DataFetcherService,
@@ -27,6 +28,7 @@ export class CoursesComponent implements OnInit {
   }
 
   onNewCourse() {
+    console.log('onNewCourse newCourseName is', this.newCourseName);
     this.courses.push({
       'course_ident': 999,
       'course_name': 'actual new course name'
