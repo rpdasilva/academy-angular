@@ -22,8 +22,15 @@ export class CoursesComponent implements OnInit {
       body => {this.courses = body;});
   }
 
-  onSelect(rec) {
+  onSelectCourse(rec) {
     this.store.setCurrentCourse(rec.course_ident);
+  }
+
+  onNewCourse() {
+    this.courses.push({
+      'course_ident': 999,
+      'course_name': 'actual new course name'
+    });
   }
 
 }
