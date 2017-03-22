@@ -23,6 +23,7 @@ export class OfferingsComponent implements OnInit {
   ngOnInit() {
     this.store.currentCourse.subscribe((courseIdent) => {
       this.courseIdent = courseIdent;
+      this.errorMessage = '';
       if (courseIdent == NOT_SET){
 	this.offerings = [];
 	this.courseName = '';
@@ -34,7 +35,6 @@ export class OfferingsComponent implements OnInit {
 	    this.courseName = body[0].course_name
 	  });
       }
-      this.errorMessage = '';
     });
   }
 

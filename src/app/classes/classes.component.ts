@@ -10,7 +10,6 @@ import { StoreService, NOT_SET } from '../store.service';
 export class ClassesComponent implements OnInit {
 
   classes: Object[] = [];
-  visible = false;
   offeringIdent = NOT_SET;
   courseName = '';
 
@@ -22,14 +21,14 @@ export class ClassesComponent implements OnInit {
 
   ngOnInit() {
     this.store.currentOffering.subscribe((offeringIdent) => {
+      this.offeringIdent = offeringIdent;
+      this.errorMessage = '';
       if (offeringIdent == NOT_SET) {
-	this.visible = false;
 	this.classes = [];
 	this.offeringIdent = NOT_SET;
 	this.courseName = '';
       }
       else {
-	this.visible = true;
 	this.backend.getClasses(offeringIdent).subscribe(
 	  body => {
 	    this.classes = body;
@@ -38,6 +37,10 @@ export class ClassesComponent implements OnInit {
 	  });
       }
     });
+  }
+
+  isVisible() {
+    return this.offeringIdent != NOT_SET;
   }
 
   onSelect(rec) {
