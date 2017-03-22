@@ -1,4 +1,4 @@
-<div *ngIf="visible">
+<div *ngIf="isVisible()">
   <p>{{offerings.length}} Offerings of "{{courseName}}"</p>
   <table border="1">
     <tr>
@@ -10,4 +10,8 @@
       <td (click)="onSelect(rec)">{{rec.start_date}}</td>
     </tr>
   </table>
+  <p>
+    <button (click)="onNewOffering()">New</button>
+  </p>
+  <p *ngIf="errorMessage">{{errorMessage}}</p>
 </div>

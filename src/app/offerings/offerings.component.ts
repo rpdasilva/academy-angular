@@ -10,8 +10,9 @@ import { StoreService, NOT_SET } from '../store.service';
 export class OfferingsComponent implements OnInit {
 
   offerings: Object[] = [];
-  courseName: '';
-  visible = false;
+  courseIdent: number = NOT_SET;
+  courseName: string = '';
+  errorMessage: string = '';
 
   constructor(
     private backend: BackendService,
@@ -21,21 +22,32 @@ export class OfferingsComponent implements OnInit {
 
   ngOnInit() {
     this.store.currentCourse.subscribe((courseIdent) => {
+      this.courseIdent = courseIdent;
       if (courseIdent == NOT_SET){
-	this.visible = false;
 	this.offerings = [];
 	this.courseName = '';
       }
       else {
-	this.visible = true;
 	this.backend.getOfferings(courseIdent).subscribe(
-	  body => {this.offerings = body; this.courseName = body[0].course_name});
+	  body => {
+	    this.offerings = body;
+	    this.courseName = body[0].course_name
+	  });
       }
+      this.errorMessage = '';
     });
+  }
+
+  isVisible() {
+    return this.courseIdent != NOT_SET;
   }
 
   onSelect(rec) {
     this.store.setCurrentOffering(rec.offering_ident);
+  }
+
+  onNewOffering() {
+    // FIXME
   }
 
 }
