@@ -101,11 +101,36 @@ on
 where
     Course.ident = ?
 group by
-    Offering.ident
+    Offering.ident;
     `;
     db.all(query_select, [req.params.q_course_ident], (err, rows) => {
 	if (err) return next(err);
 	res.status(200).json(rows);
+    });
+});
+
+// Add an offering for a course.
+// / + {'course_ident': ident} =>
+// {'course_ident': ident, 'course_name': name, 'offering_ident': ident}
+app.post('/offerings', (req, res, next) => {
+    const query_insert = `
+insert into Offering(course) values(?);
+    `;
+    const query_select = `
+select Course.name as course_name
+from Course
+where Course.ident = ?
+    `;
+    const course_ident = parseInt(req.body.course_ident);
+    db.run(query_insert, [course_ident], function(err, rows) {
+	if (err) return next(err);
+	const code = 201;
+	let result = {'course_ident': course_ident, 'offering_ident': this.lastID};
+	db.get(query_select, [course_ident], function(err, row) {
+	    if (err) return next(err);
+	    result['course_name'] = row['course_name'];
+	    res.status(code).json(result);
+	});
     });
 });
 
