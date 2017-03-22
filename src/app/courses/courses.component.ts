@@ -10,8 +10,8 @@ import { StoreService, NOT_SET } from '../store.service';
 export class CoursesComponent implements OnInit {
 
   courses: Object[] = [];
-  newCourseName: string = '';
   errorMessage: string = '';
+  newCourseName: string = '';
 
   constructor(
     private backend: BackendService,

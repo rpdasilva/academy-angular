@@ -53,6 +53,7 @@ app.get('/', (req, res, next) => {
 // / =>
 // [{course_ident, course_name}, ...]
 app.get('/courses', (req, res, next) => {
+
     const query_select = `
 select
     Course.ident	as course_ident,
@@ -60,6 +61,7 @@ select
 from
     Course;
     `;
+
     db.all(query_select, (err, rows) => {
 	if (err) return next(err);
 	res.status(200).json(rows);
@@ -67,17 +69,20 @@ from
 });
 
 // Add a course
-// / + {'course_name': name} =>
-// {'course_ident': ident, 'course_name': name}
+// / + {'course_name': string} =>
+// {course_ident, course_name}
 app.post('/courses', (req, res, next) => {
-    const query_insert = `
+
+    const query_create = `
 insert into Course(name) values(?);
     `;
+
     const name = req.body.course_name;
-    db.run(query_insert, [name], function(err, rows) {
+    db.run(query_create, [name], function(err) {
 	if (err) return next(err);
+	const course_ident = this.lastID;
 	const code = 201;
-	const result = {'course_ident': this.lastID, 'course_name': name};
+	const result = {'course_ident': course_ident, 'course_name': name};
         res.status(code).json(result);
     });
 });
@@ -87,6 +92,7 @@ insert into Course(name) values(?);
 // [{course_ident, course_name, offering_ident, start_date}, ...]
 // where 'start_date' is the date of the earliest class.
 app.get('/offerings/:q_course_ident', (req, res, next) => {
+
     const query_select = `
 select
     Course.ident	as course_ident,
@@ -103,6 +109,7 @@ where
 group by
     Offering.ident;
     `;
+
     db.all(query_select, [req.params.q_course_ident], (err, rows) => {
 	if (err) return next(err);
 	res.status(200).json(rows);
@@ -110,26 +117,54 @@ group by
 });
 
 // Add an offering for a course.
-// / + {'course_ident': ident} =>
-// {'course_ident': ident, 'course_name': name, 'offering_ident': ident}
+// /offerings + {'course_ident': ident, 'start_date': date, 'start_time': time} =>
+// {course_ident, course_name, offering_ident, start_date, start_time}
 app.post('/offerings', (req, res, next) => {
-    const query_insert = `
+
+    const query_create_offering = `
 insert into Offering(course) values(?);
     `;
-    const query_select = `
-select Course.name as course_name
-from Course
-where Course.ident = ?
+
+    const query_create_class = `
+insert into Class(offering, calendar, starting) values(?, ?, ?);
     `;
+
+    const query_select = `
+select
+    Course.name		as course_name,
+    min(Class.calendar)	as start_date
+from
+    Course join Offering join Class
+on
+    Offering.course = Course.ident and
+    Offering.ident = Class.offering
+where
+    Course.ident = ? and
+    Offering.ident = ?
+group by
+    Offering.ident;
+    `;
+
     const course_ident = parseInt(req.body.course_ident);
-    db.run(query_insert, [course_ident], function(err, rows) {
+    const start_date = req.body.start_date;
+    const start_time = req.body.start_time;
+    db.run(query_create_offering, [course_ident], function(err) {
 	if (err) return next(err);
-	const code = 201;
-	let result = {'course_ident': course_ident, 'offering_ident': this.lastID};
-	db.get(query_select, [course_ident], function(err, row) {
+	const offering_ident = this.lastID;
+	db.run(query_create_class, [offering_ident, start_date, start_time], function(err) {
 	    if (err) return next(err);
-	    result['course_name'] = row['course_name'];
-	    res.status(code).json(result);
+    	    const code = 201;
+	    let result = {
+		course_ident: course_ident,
+		offering_ident: offering_ident,
+		start_date: start_date
+	    };
+	    db.get(query_select, [course_ident, offering_ident], function(err, row) {
+		if (err) return next(err);
+		result['course_name'] = row['course_name'];
+		result['start_date'] = row['start_date'];
+		res.status(code).json(result);
+	    });
 	});
     });
 });
@@ -138,6 +173,7 @@ where Course.ident = ?
 // /classes/{offering_ident} =>
 // [{course_ident, course_name, offering_ident, class_ident, calendar, starting}, ...]
 app.get('/classes/:q_offering_ident', (req, res, next) => {
+
     const query_select = `
 select
     Course.ident	as course_ident,
@@ -154,6 +190,7 @@ on
 where
     Offering.ident = ?
     `;
+
     db.all(query_select, [req.params.q_offering_ident], (err, rows) => {
 	if (err) return next(err);
 	res.status(200).json(rows);

@@ -11,7 +11,9 @@
     </tr>
   </table>
   <p>
-    <button (click)="onNewOffering()">New</button>
+    <button (click)="onNewOffering(newOfferingStartDate, newOfferingStartTime)">New</button>
+    <input [(ngModel)]="newOfferingStartDate" placeholder="new offering start date (YYYY-MM-DD)" size="30"/>
+    <input [(ngModel)]="newOfferingStartTime" placeholder="new offering start time (HH:MM)" size="30"/>
   </p>
   <p *ngIf="errorMessage">{{errorMessage}}</p>
 </div>

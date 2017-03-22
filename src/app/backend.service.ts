@@ -30,8 +30,8 @@ export class BackendService {
     return this.getData(`${this.base}/offerings/${courseIdent}`);
   }
 
-  addOffering(courseIdent: number): Observable<any> {
-    const body = {'course_ident': courseIdent};
+  addOffering(courseIdent: number, startDate: string, startTime: string): Observable<any> {
+    const body = {'course_ident': courseIdent, 'start_date': startDate, 'start_time': startTime};
     return this.http.post(`${this.base}/offerings`, body)
       .map(res => ({success: true, payload: res.json()}))
       .catch(err => Observable.of({success: false, payload: 'SERVER ERROR'}));
