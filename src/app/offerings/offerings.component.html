@@ -2,11 +2,11 @@
   <p>{{offerings.length}} Offerings of "{{courseName}}"</p>
   <table border="1">
     <tr>
-      <th>Offering Identifier</th>
+      <th>Offering ID</th>
       <th>Start Date</th>
     </tr>
     <tr *ngFor="let rec of offerings">
-      <td (click)="onSelect(rec)">{{rec.offering_ident}}</td>
+      <td (click)="onSelect(rec)">{{rec.offering_id}}</td>
       <td (click)="onSelect(rec)">{{rec.start_date}}</td>
     </tr>
   </table>

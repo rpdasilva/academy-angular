@@ -10,7 +10,7 @@ import { StoreService, NOT_SET } from '../store.service';
 export class OfferingsComponent implements OnInit {
 
   offerings: Object[] = [];
-  courseIdent: number = NOT_SET;
+  courseId: number = NOT_SET;
   courseName: string = '';
   errorMessage: string = '';
 
@@ -24,15 +24,15 @@ export class OfferingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store.currentCourse.subscribe((courseIdent) => {
-      this.courseIdent = courseIdent;
+    this.store.currentCourse.subscribe((courseId) => {
+      this.courseId = courseId;
       this.errorMessage = '';
-      if (courseIdent == NOT_SET){
+      if (courseId == NOT_SET){
 	this.offerings = [];
 	this.courseName = '';
       }
       else {
-	this.backend.getOfferings(courseIdent).subscribe(
+	this.backend.getOfferings(courseId).subscribe(
 	  body => {
 	    this.offerings = body;
 	    this.courseName = body[0].course_name
@@ -42,15 +42,15 @@ export class OfferingsComponent implements OnInit {
   }
 
   isVisible() {
-    return this.courseIdent != NOT_SET;
+    return this.courseId != NOT_SET;
   }
 
   onSelect(rec) {
-    this.store.setCurrentOffering(rec.offering_ident);
+    this.store.setCurrentOffering(rec.offering_id);
   }
 
   onNewOffering(startDate, startTime) {
-    this.backend.addOffering(this.courseIdent, startDate, startTime).subscribe(
+    this.backend.addOffering(this.courseId, startDate, startTime).subscribe(
       ({success, payload}) => {
 	if (success) {
 	  this.offerings = [...this.offerings, payload];

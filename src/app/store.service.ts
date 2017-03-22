@@ -12,19 +12,19 @@ export class StoreService {
 
   constructor() { }
 
-  setCurrentCourse(ident) {
-    this.currentCourse.next(ident);
+  setCurrentCourse(course_id) {
+    this.currentCourse.next(course_id);
     this.currentOffering.next(NOT_SET);
     this.currentClass.next(NOT_SET);
   }
 
-  setCurrentOffering(ident) {
-    this.currentOffering.next(ident);
+  setCurrentOffering(offering_id) {
+    this.currentOffering.next(offering_id);
     this.currentClass.next(NOT_SET);
   }
 
-  setCurrentClass(ident) {
-    this.currentClass.next(ident);
+  setCurrentClass(class_id) {
+    this.currentClass.next(class_id);
   }
 
 }

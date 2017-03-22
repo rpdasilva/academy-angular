@@ -1,15 +1,15 @@
 <div *ngIf="isVisible()">
-  <p>{{classes.length}} Classes for Offering {{offeringIdent}} of "{{courseName}}"</p>
+  <p>{{classes.length}} Classes for Offering {{offeringId}} of "{{courseName}}"</p>
   <table border="1">
     <tr>
-      <th>Class Identifier</th>
+      <th>Class ID</th>
       <th>Date</th>
-      <th>Start Time</th>
+      <th>Time</th>
     </tr>
     <tr *ngFor="let rec of classes">
-      <td (click)="onSelect(rec)">{{rec.class_ident}}</td>
-      <td>{{rec.calendar}}</td>
-      <td>{{rec.starting}}</td>
+      <td (click)="onSelect(rec)">{{rec.class_id}}</td>
+      <td>{{rec.class_date}}</td>
+      <td>{{rec.class_time}}</td>
     </tr>
   </table>
   <p>

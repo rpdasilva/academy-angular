@@ -1,7 +1,7 @@
 -- All courses that have ever existed.
 create table Course(
 	ident		integer unique not null primary key,
-	name		text unique not null
+	course_name	text unique not null
 );
 
 insert into Course values(1, "Writing Bugs for Fun and Profit");
@@ -10,7 +10,7 @@ insert into Course values(2, "Creating Confusing User Interfaces");
 -- All offerings of all courses.
 create table Offering(
 	ident		integer unique not null primary key,
-	course		integer not null references Course(ident)
+	course_id	integer not null references Course(ident)
 );
 
 insert into Offering values(1, 1); -- Bugs #1
@@ -22,9 +22,9 @@ insert into Offering values(5, 2); -- UX #2
 -- When offerings occurred (to handle multi-part courses).
 create table Class(
 	ident		integer unique not null primary key,
-	offering	integer not null references Offering(ident),
-	calendar	text not null, -- YYYY-MM-DD
-	starting	text not null  -- HH:MM (24-hour clock)
+	offering_id	integer not null references Offering(ident),
+	class_date	text not null, -- YYYY-MM-DD
+	class_time	text not null  -- HH:MM (24-hour clock)
 );
 
 insert into Class values(1, 1, '2017-01-01', '09:00'); -- Bugs #1 only class
@@ -38,8 +38,8 @@ insert into Class values(7, 5, '2017-02-14', '10:00'); -- UX #2 class 1 (out of 
 -- All people that have ever existed.
 create table Person(
 	ident		text unique not null primary key,
-	personal	text not null,
-	family		text not null,
+	personal_name	text not null,
+	family_name	text not null,
 	email		text not null
 );
 
@@ -54,7 +54,7 @@ insert into Person values("mh", "Margaret", "Hamilton", "mh@usl.org");
 -- Roles people can have in particular offerings.
 create table Role(
 	ident		text unique not null primary key,
-	name		text not null
+	role_name	text not null
 );
 
 insert into Role values("INS", "instructor");
@@ -63,9 +63,9 @@ insert into Role values("LRN", "learner");
 -- Activities (roles people had in particular offerings).
 create table Activity(
 	ident		integer unique not null primary key,
-	offering	integer not null references Offering(ident),
-	person		integer not null references Person(ident),
-	role		integer not null references Role(ident)
+	offering_id	integer not null references Offering(ident),
+	person_id	integer not null references Person(ident),
+	role_id		integer not null references Role(ident)
 );
 
 insert into Activity values( 1, 1, "k.mcn", "INS"); -- Bugs #1 McNulty instructor
@@ -92,9 +92,9 @@ insert into Activity values(16, 5, "f.bil", "INS"); -- UX #2 Bilas instructor
 -- Involvement (people can be qualified as instructors or be interested in a course).
 create table Involvement(
 	ident		integer unique not null primary key,
-	course		integer not null references Course(ident),
-	person		integer not null references Person(ident),
-	role		integer not null references Role(ident)
+	course_id	integer not null references Course(ident),
+	person_id	integer not null references Person(ident),
+	role_id		integer not null references Role(ident)
 );
 
 insert into Involvement values( 1, 1, "k.mcn", "INS");

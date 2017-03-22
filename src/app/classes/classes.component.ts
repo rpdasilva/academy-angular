@@ -10,7 +10,7 @@ import { StoreService, NOT_SET } from '../store.service';
 export class ClassesComponent implements OnInit {
 
   classes: Object[] = [];
-  offeringIdent: number = NOT_SET;
+  offeringId: number = NOT_SET;
   courseName: string = '';
   errorMessage: string = '';
 
@@ -24,35 +24,35 @@ export class ClassesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store.currentOffering.subscribe((offeringIdent) => {
-      this.offeringIdent = offeringIdent;
+    this.store.currentOffering.subscribe((offeringId) => {
+      this.offeringId = offeringId;
       this.errorMessage = '';
-      if (offeringIdent == NOT_SET) {
+      if (offeringId == NOT_SET) {
 	this.classes = [];
-	this.offeringIdent = NOT_SET;
+	this.offeringId = NOT_SET;
 	this.courseName = '';
       }
       else {
-	this.backend.getClasses(offeringIdent).subscribe(
+	this.backend.getClasses(offeringId).subscribe(
 	  body => {
 	    this.classes = body;
-	    this.offeringIdent = body[0].offering_ident;
 	    this.courseName = body[0].course_name;
+	    this.offeringId = body[0].offering_id;
 	  });
       }
     });
   }
 
   isVisible() {
-    return this.offeringIdent != NOT_SET;
+    return this.offeringId != NOT_SET;
   }
 
   onSelect(rec) {
-    this.store.setCurrentClass(rec.class_ident);
+    this.store.setCurrentClass(rec.class_id);
   }
 
   onNewClass(classDate, classTime) {
-    this.backend.addClass(this.offeringIdent, classDate, classTime).subscribe(
+    this.backend.addClass(this.offeringId, classDate, classTime).subscribe(
       ({success, payload}) => {
 	if (success) {
 	  this.classes = [...this.classes, payload];

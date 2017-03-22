@@ -25,7 +25,7 @@ export class CoursesComponent implements OnInit {
   }
 
   onSelectCourse(rec) {
-    this.store.setCurrentCourse(rec.course_ident);
+    this.store.setCurrentCourse(rec.course_id);
     this.errorMessage = '';
   }
 

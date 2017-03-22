@@ -19,39 +19,39 @@ export class BackendService {
     return this.getData(`${this.base}/courses`);
   }
 
-  addCourse(courseName: string): Observable<any> {
+  addCourse(course_name: string): Observable<any> {
     const body = {
-      course_name: courseName
+      course_name
     };
     return this.http.post(`${this.base}/courses`, body)
       .map(res => ({success: true, payload: res.json()}))
       .catch(err => Observable.of({success: false, payload: 'SERVER ERROR'}));
   }
 
-  getOfferings(courseIdent: number): Observable<any> {
-    return this.getData(`${this.base}/offerings/${courseIdent}`);
+  getOfferings(course_id: number): Observable<any> {
+    return this.getData(`${this.base}/offerings/${course_id}`);
   }
 
-  addOffering(courseIdent: number, startDate: string, startTime: string): Observable<any> {
+  addOffering(course_id: number, start_date: string, start_time: string): Observable<any> {
     const body = {
-      course_ident: courseIdent,
-      start_date: startDate,
-      start_time: startTime
+      course_id,
+      start_date,
+      start_time
     };
     return this.http.post(`${this.base}/offerings`, body)
       .map(res => ({success: true, payload: res.json()}))
       .catch(err => Observable.of({success: false, payload: 'SERVER ERROR'}));
   }
 
-  getClasses(offeringIdent: number): Observable<any> {
-    return this.getData(`${this.base}/classes/${offeringIdent}`);
+  getClasses(offering_id: number): Observable<any> {
+    return this.getData(`${this.base}/classes/${offering_id}`);
   }
 
-  addClass(offeringIdent: number, startDate: string, startTime: string): Observable<any> {
+  addClass(offering_id: number, class_date: string, class_time: string): Observable<any> {
     const body = {
-      offering_ident: offeringIdent,
-      start_date: startDate,
-      start_time: startTime
+      offering_id,
+      class_date,
+      class_time
     };
     return this.http.post(`${this.base}/classes`, body)
       .map(res => ({success: true, payload: res.json()}))
