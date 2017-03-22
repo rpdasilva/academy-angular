@@ -168,3 +168,9 @@ README](https://github.com/angular/angular-cli/blob/master/README.md).
 1.  Add an element to `courses.template.html` to display error messages
     if they are present, and logic to set and clear an `errorMessage`
     variable in `CoursesComponent` on every action.
+
+1.  Refactor to remove explicit `visible` property on offerings and
+    classes and use `isVisible` method that compares course and
+    offering identifiers to `NOT_SET`.
+
+1.  Add and test function in server to add new offering.
