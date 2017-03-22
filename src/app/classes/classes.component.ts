@@ -14,6 +14,9 @@ export class ClassesComponent implements OnInit {
   courseName: string = '';
   errorMessage: string = '';
 
+  newClassDate: string = '';
+  newClassTime: string = '';
+
   constructor(
     private backend: BackendService,
     private store: StoreService
@@ -46,6 +49,19 @@ export class ClassesComponent implements OnInit {
 
   onSelect(rec) {
     this.store.setCurrentClass(rec.class_ident);
+  }
+
+  onNewClass(classDate, classTime) {
+    this.backend.addClass(this.offeringIdent, classDate, classTime).subscribe(
+      ({success, payload}) => {
+	if (success) {
+	  this.classes = [...this.classes, payload];
+	  this.errorMessage = '';
+	}
+	else {
+	  this.errorMessage = payload;
+	}
+      });
   }
 
 }

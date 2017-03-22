@@ -12,4 +12,10 @@
       <td>{{rec.starting}}</td>
     </tr>
   </table>
+  <p>
+    <button (click)="onNewClass(newClassDate, newClassTime)">New</button>
+    <input [(ngModel)]="newClassDate" placeholder="new class start date (YYYY-MM-DD)" size="30"/>
+    <input [(ngModel)]="newClassTime" placeholder="new class start time (HH:MM)" size="30"/>
+  </p>
+  <p *ngIf="errorMessage">{{errorMessage}}</p>
 </div>

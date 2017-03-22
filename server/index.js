@@ -197,5 +197,49 @@ where
     });
 });
 
+// Add a class for an offering.
+// /classes + {'offering_ident': ident, 'start_date': date, 'start_time': time} =>
+// {course_ident, course_name, offering_ident, start_date, start_time}
+app.post('/classes', (req, res, next) => {
+
+    const query_create_class = `
+insert into Class(offering, calendar, starting) values(?, ?, ?);
+    `;
+
+    const query_select = `
+select
+    Course.ident	as course_ident,
+    Course.name		as course_name
+from
+    Course join Offering join Class
+on
+    Offering.course = Course.ident and
+    Offering.ident = Class.offering
+where
+    Class.ident = ?;
+    `;
+
+    const offering_ident = parseInt(req.body.offering_ident);
+    const start_date = req.body.start_date;
+    const start_time = req.body.start_time;
+    db.run(query_create_class, [offering_ident, start_date, start_time], function(err) {
+	if (err) return next(err);
+    	const code = 201;
+	const class_ident = this.lastID;
+	let result = {
+	    offering_ident: offering_ident,
+	    class_ident: class_ident,
+	    start_date: start_date,
+	    start_time: start_time
+	};
+	db.get(query_select, [class_ident], function(err, row) {
+	    if (err) return next(err);
+	    result['course_ident'] = row['course_ident'];
+	    result['course_name'] = row['course_name'];
+	    res.status(code).json(result);
+	});
+    });
+});
+
 // Run
 app.listen(port, () => {console.log('listening...');});
