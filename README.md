@@ -143,3 +143,28 @@ README](https://github.com/angular/angular-cli/blob/master/README.md).
     1.  Inject the store service and make `ClassComponent` subscribe
         to `StoreService.currentOffering`.
     1.  Replicate the show/hide logic used in `OfferingComponent`.
+
+1.  Modify `server/index.js` to accept POST requests with new courses.
+    1.  Enforce uniqueness constraint on course names.
+    1.  Fetch just-added course by name to return its ID.
+    1.  Let server handle errors as it normally would.
+
+1.  Rename data fetching service to `Backend` because it is now going
+    to be used for pushing as well as pulling.
+    1.  `angular-cli` doesn't have "rename" functionality, so this
+        involves a lot of searching, replacing, recompiling, and
+	swearing.
+
+1.  Refactor `Backend` so that URLs are generated internally rather
+    than being passed in.
+
+1.  Add a `catch` in the POSTing method of `Backend` to handle error
+    return values.
+    *   This must convert its input to an Observable so that callers
+        of the method always get an Observable: returning the array
+	directly leads to weird casting behavior (an observable that
+	serves the array items one by one).
+
+1.  Add an element to `courses.template.html` to display error messages
+    if they are present, and logic to set and clear an `errorMessage`
+    variable in `CoursesComponent` on every action.
