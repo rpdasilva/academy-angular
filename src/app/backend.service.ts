@@ -21,13 +21,20 @@ export class BackendService {
 
   addCourse(courseName: string): Observable<any> {
     const body = {'course_name': courseName};
-    return this.http.post(this.base + '/courses', body)
+    return this.http.post(`${this.base}/courses`, body)
       .map(res => ({success: true, payload: res.json()}))
       .catch(err => Observable.of({success: false, payload: 'SERVER ERROR'}));
   }
 
   getOfferings(courseIdent: number): Observable<any> {
-    return this.getData(`${this.base}/offerings/${courseIdent}`)
+    return this.getData(`${this.base}/offerings/${courseIdent}`);
+  }
+
+  addOffering(courseIdent: number): Observable<any> {
+    const body = {'course_ident': courseIdent};
+    return this.http.post(`${this.base}/offerings`, body)
+      .map(res => ({success: true, payload: res.json()}))
+      .catch(err => Observable.of({success: false, payload: 'SERVER ERROR'}));
   }
 
   getClasses(offeringIdent: number): Observable<any> {

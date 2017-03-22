@@ -47,7 +47,16 @@ export class OfferingsComponent implements OnInit {
   }
 
   onNewOffering() {
-    // FIXME
+    this.backend.addOffering(this.courseIdent).subscribe(
+      ({success, payload}) => {
+	if (success) {
+	  this.offerings = [...this.offerings, payload];
+	  this.errorMessage = '';
+	}
+	else {
+	  this.errorMessage = payload;
+	}
+      });
   }
 
 }
