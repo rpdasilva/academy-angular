@@ -32,19 +32,11 @@ from
 `;
 
 const Q_UPDATE_COURSE = `
-update
-    Course
-set
-    course_name = ?
-where
-    ident = ?;
+update Course set course_name = ? where ident = ?;
 `;
 
 const Q_DELETE_COURSE = `
-delete from
-    Course
-where
-    ident = ?;
+delete from Course where ident = ?;
 `;
 
 const Q_CREATE_OFFERING = `
@@ -87,10 +79,7 @@ group by
 `;
 
 const Q_DELETE_OFFERING = `
-delete from
-    Offering
-where
-    ident = ?;
+delete from Offering where ident = ?;
 `;
 
 const Q_CREATE_CLASS = `
@@ -114,20 +103,6 @@ where
     Offering.ident = ?
 `;
 
-const Q_GET_ONE_CLASS_OF_OFFERING = `
-select
-    Course.ident                as course_id,
-    Course.course_name          as course_name
-from
-    Course join Offering join Class
-on
-    Offering.course_id = Course.ident
-and
-    Class.offering_id = Offering.ident
-where
-    Class.ident = ?;
-    `;
-
 const Q_GET_OFFERING_OF_CLASS = `
 select
     Offering.ident		as offering_id
@@ -140,10 +115,7 @@ where
 `;
 
 const Q_DELETE_CLASS = `
-delete from
-    Class
-where
-    ident = ?;
+delete from Class where ident = ?;
 `;
 
 // Main objects.
