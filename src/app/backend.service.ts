@@ -48,6 +48,12 @@ export class BackendService {
       .catch(err => Observable.of({success: false, payload: 'SERVER ERROR'}));
   }
 
+  deleteOffering(offering_id: number): Observable<any> {
+    return this.http.delete(`${this.base}/offerings/${offering_id}`)
+      .map(res => ({success: true, payload: res.json()}))
+      .catch(err => Observable.of({success: false, payload: 'SERVER ERROR'}));
+  }
+
   getClasses(offering_id: number): Observable<any> {
     return this.getData(`${this.base}/classes/${offering_id}`);
   }

@@ -4,10 +4,12 @@
     <tr>
       <th>Offering ID</th>
       <th>Start Date</th>
+      <th>Delete</th>
     </tr>
     <tr *ngFor="let rec of offerings">
       <td (click)="onSelect(rec)">{{rec.offering_id}}</td>
       <td (click)="onSelect(rec)">{{rec.start_date}}</td>
+      <td><button (click)="onDeleteOffering(rec)">delete</button></td>
     </tr>
   </table>
   <p>

@@ -204,6 +204,61 @@ group by
     });
 });
 
+// Delete an offering
+// "/offerings/<offering_id>" =>
+// [{course_id, course_name, offering_id, start_date}*]
+// where 'start_date' is the date of the earliest class.
+app.delete('/offerings/:offering_id', (req, res, next) => {
+
+    const query_course_id = `
+select
+    Course.ident		as course_id
+from
+    Course join Offering
+on
+    Offering.course_id = Course.ident
+where
+    Offering.ident = ?;
+    `;
+
+    const query_delete = `
+delete from
+    Offering
+where
+    ident = ?;
+    `;
+
+    const query_select = `
+select
+    Course.ident                as course_id,
+    Course.course_name          as course_name,
+    Offering.ident              as offering_id,
+    min(Class.class_date)       as start_date
+from
+    Course join Offering join Class
+on
+    Offering.course_id = Course.ident
+and
+    Class.offering_id = Offering.ident
+where
+    Course.ident = ?
+group by
+    Offering.ident;
+    `;
+
+    db.get(query_course_id, [req.params.offering_id], (err, row) => {
+        if (err) return next(err);
+        const course_id = row['course_id'];
+        db.run(query_delete, [req.params.offering_id], (err, rows) => {
+            if (err) return next(err);
+            db.all(query_select, [course_id], (err, rows) => {
+                if (err) return next(err);
+                res.status(200).json(rows);
+            });
+        });
+    });
+});
+
 // List all classes for a particular offering.
 // "/classes/<offering_id>" =>
 // [{course_id, course_name, offering_id, class_id, class_date, class_time}*]

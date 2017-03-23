@@ -62,4 +62,17 @@ export class OfferingsComponent implements OnInit {
       });
   }
 
+  onDeleteOffering(rec) {
+    this.backend.deleteOffering(rec.offering_id).subscribe(
+      ({success, payload}) => {
+        if (success) {
+          this.offerings = payload;
+          this.errorMessage = '';
+        }
+        else {
+          this.errorMessage = payload;
+        }
+      });
+  }
+
 }
