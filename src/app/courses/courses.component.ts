@@ -42,4 +42,17 @@ export class CoursesComponent implements OnInit {
       });
   }
 
+  onDeleteCourse(rec) {
+    this.backend.deleteCourse(rec.course_id).subscribe(
+      ({success, payload}) => {
+        if (success) {
+          this.courses = payload;
+          this.errorMessage = '';
+        }
+        else {
+          this.errorMessage = payload;
+        }
+      });
+  }
+
 }

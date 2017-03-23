@@ -4,10 +4,12 @@
     <tr>
       <th>Course ID</th>
       <th>Course Name</th>
+      <th>Delete</th>
     </tr>
     <tr *ngFor="let rec of courses">
       <td (click)="onSelectCourse(rec)">{{rec.course_id}}</td>
       <td><input [(ngModel)]="rec.course_name" placeholder="{{rec.course_name}}" size="60" /></td>
+      <td><button (click)="onDeleteCourse(rec)">delete</button></td>
     </tr>
   </table>
   <p>

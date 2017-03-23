@@ -33,8 +33,9 @@ app.use(expressWinston.logger({
     msg: "HTTP {{res.statusCode}} {{req.method}} {{req.url}}"
 }));
 
-// Links to all endpoints.
-// => HTML
+// Links to all endpoints for testing purposes.
+// "/" =>
+// HTML
 app.get('/', (req, res, next) => {
     res.status(200).send(`
 <html>
@@ -50,26 +51,26 @@ app.get('/', (req, res, next) => {
 });
 
 // List all courses
-// "/" =>
-// [{course_id, course_name}, ...]
+// "/courses" =>
+// [{course_id, course_name}*]
 app.get('/courses', (req, res, next) => {
 
     const query_select = `
 select
-    Course.ident		as course_id,
-    Course.course_name		as course_name
+    Course.ident                as course_id,
+    Course.course_name          as course_name
 from
     Course;
     `;
 
     db.all(query_select, (err, rows) => {
-	if (err) return next(err);
-	res.status(200).json(rows);
+        if (err) return next(err);
+        res.status(200).json(rows);
     });
 });
 
 // Add a course
-// "/" + {course_name} =>
+// "/courses" + {course_name} =>
 // {course_id, course_name}
 app.post('/courses', (req, res, next) => {
 
@@ -79,29 +80,58 @@ insert into Course(course_name) values(?);
 
     const course_name = req.body.course_name;
     db.run(query_create, [course_name], function(err) {
-	if (err) return next(err);
-	const course_id = this.lastID;
-	const code = 201;
-	const result = {
-	    course_id,
-	    course_name
-	};
+        if (err) return next(err);
+        const course_id = this.lastID;
+        const code = 201;
+        const result = {
+            course_id,
+            course_name
+        };
         res.status(code).json(result);
     });
 });
 
-// List all offerings of a course.
-// "/offerings/{course_id}" =>
-// [{course_id, course_name, offering_id, start_date}, ...]
-// where 'start_date' is the date of the earliest class.
-app.get('/offerings/:q_course_id', (req, res, next) => {
+// Delete a course
+// "/courses/<course_id>" =>
+// [{course_id, course_name}*]
+app.delete('/courses/:course_id', (req, res, next) => {
+
+    const query_delete = `
+delete from
+    Course
+where
+    ident = ?;
+    `;
 
     const query_select = `
 select
-    Course.ident		as course_id,
-    Course.course_name		as course_name,
-    Offering.ident		as offering_id,
-    min(Class.class_date)	as start_date
+    Course.ident                as course_id,
+    Course.course_name          as course_name
+from
+    Course;
+    `;
+
+    db.run(query_delete, [req.params.course_id], (err, rows) => {
+        if (err) return next(err);
+        db.all(query_select, (err, rows) => {
+            if (err) return next(err);
+            res.status(200).json(rows);
+        });
+    });
+});
+
+// List all offerings of a course.
+// "/offerings/<course_id>" =>
+// [{course_id, course_name, offering_id, start_date}*]
+// where 'start_date' is the date of the earliest class.
+app.get('/offerings/:course_id', (req, res, next) => {
+
+    const query_select = `
+select
+    Course.ident                as course_id,
+    Course.course_name          as course_name,
+    Offering.ident              as offering_id,
+    min(Class.class_date)       as start_date
 from
     Course join Offering join Class
 on
@@ -114,16 +144,16 @@ group by
     Offering.ident;
     `;
 
-    db.all(query_select, [req.params.q_course_id], (err, rows) => {
-	if (err) return next(err);
-	res.status(200).json(rows);
+    db.all(query_select, [req.params.course_id], (err, rows) => {
+        if (err) return next(err);
+        res.status(200).json(rows);
     });
 });
 
 // Add an offering for a course.
-// "/offerings" + {course_id, class_date, class_time} =>
+// "/offerings/<course_id>" + {class_date, class_time} =>
 // {course_id, course_name, offering_id, class_date, class_time}
-app.post('/offerings', (req, res, next) => {
+app.post('/offerings/:course_id', (req, res, next) => {
 
     const query_create_offering = `
 insert into Offering(course_id) values(?);
@@ -135,8 +165,8 @@ insert into Class(offering_id, class_date, class_time) values(?, ?, ?);
 
     const query_select = `
 select
-    Course.course_name		as course_name,
-    min(Class.class_date)	as start_date
+    Course.course_name          as course_name,
+    min(Class.class_date)       as start_date
 from
     Course join Offering join Class
 on
@@ -150,43 +180,43 @@ group by
     Offering.ident;
     `;
 
-    const course_id = parseInt(req.body.course_id);
+    const course_id = parseInt(req.params.course_id);
     const class_date = req.body.start_date;
     const class_time = req.body.start_time;
     db.run(query_create_offering, [course_id], function(err) {
-	if (err) return next(err);
-	const offering_id = this.lastID;
-	db.run(query_create_class, [offering_id, class_date, class_time], function(err) {
-	    if (err) return next(err);
-    	    const code = 201;
-	    let result = {
-		course_id,
-		offering_id,
-		start_date: class_date,
-	    };
-	    db.get(query_select, [course_id, offering_id], function(err, row) {
-		if (err) return next(err);
-		result['course_name'] = row['course_name'];
-		result['class_date'] = row['class_date'];
-		res.status(code).json(result);
-	    });
-	});
+        if (err) return next(err);
+        const offering_id = this.lastID;
+        db.run(query_create_class, [offering_id, class_date, class_time], function(err) {
+            if (err) return next(err);
+            const code = 201;
+            let result = {
+                course_id,
+                offering_id,
+                start_date: class_date,
+            };
+            db.get(query_select, [course_id, offering_id], function(err, row) {
+                if (err) return next(err);
+                result['course_name'] = row['course_name'];
+                result['class_date'] = row['class_date'];
+                res.status(code).json(result);
+            });
+        });
     });
 });
 
 // List all classes for a particular offering.
-// "/classes/{offering_id}" =>
-// [{course_id, course_name, offering_id, class_id, class_date, class_time}, ...]
-app.get('/classes/:q_offering_id', (req, res, next) => {
+// "/classes/<offering_id>" =>
+// [{course_id, course_name, offering_id, class_id, class_date, class_time}*]
+app.get('/classes/:offering_id', (req, res, next) => {
 
     const query_select = `
 select
-    Course.ident		as course_id,
-    Course.course_name		as course_name,
-    Offering.ident		as offering_id,
-    Class.ident			as class_id,
-    Class.class_date		as class_date,
-    Class.class_time		as class_time
+    Course.ident                as course_id,
+    Course.course_name          as course_name,
+    Offering.ident              as offering_id,
+    Class.ident                 as class_id,
+    Class.class_date            as class_date,
+    Class.class_time            as class_time
 from
     Course join Offering join Class
 on
@@ -196,16 +226,16 @@ where
     Offering.ident = ?
     `;
 
-    db.all(query_select, [req.params.q_offering_id], (err, rows) => {
-	if (err) return next(err);
-	res.status(200).json(rows);
+    db.all(query_select, [req.params.offering_id], (err, rows) => {
+        if (err) return next(err);
+        res.status(200).json(rows);
     });
 });
 
 // Add a class for an offering.
-// "/classes" + {offering_id, class_date, class_time} =>
+// "/classes/<offering_id>" + {class_date, class_time} =>
 // {course_id, course_name, offering_id, class_id, class_date, class_time}
-app.post('/classes', (req, res, next) => {
+app.post('/classes/:offering_id', (req, res, next) => {
 
     const query_create_class = `
 insert into Class(offering_id, class_date, class_time) values(?, ?, ?);
@@ -213,8 +243,8 @@ insert into Class(offering_id, class_date, class_time) values(?, ?, ?);
 
     const query_select = `
 select
-    Course.ident		as course_id,
-    Course.course_name		as course_name
+    Course.ident                as course_id,
+    Course.course_name          as course_name
 from
     Course join Offering join Class
 on
@@ -225,25 +255,25 @@ where
     Class.ident = ?;
     `;
 
-    const offering_id = parseInt(req.body.offering_id);
+    const offering_id = parseInt(req.params.offering_id);
     const class_date = req.body.class_date;
     const class_time = req.body.class_time;
     db.run(query_create_class, [offering_id, class_date, class_time], function(err) {
-	if (err) return next(err);
-    	const code = 201;
-	const class_id = this.lastID;
-	let result = {
-	    offering_id,
-	    class_id,
-	    class_date,
-	    class_time
-	};
-	db.get(query_select, [class_id], function(err, row) {
-	    if (err) return next(err);
-	    result['course_id'] = row['course_id'];
-	    result['course_name'] = row['course_name'];
-	    res.status(code).json(result);
-	});
+        if (err) return next(err);
+        const code = 201;
+        const class_id = this.lastID;
+        let result = {
+            offering_id,
+            class_id,
+            class_date,
+            class_time
+        };
+        db.get(query_select, [class_id], function(err, row) {
+            if (err) return next(err);
+            result['course_id'] = row['course_id'];
+            result['course_name'] = row['course_name'];
+            res.status(code).json(result);
+        });
     });
 });
 
