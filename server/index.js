@@ -7,6 +7,145 @@ const sqlite3 = require('sqlite3');
 const path = require('path');
 const cors = require('cors'); // https://github.com/rangle/hub/wiki/CORS
 
+const HOME_PAGE = `
+<html>
+  <body>
+    <ul>
+      <li><a href="/courses">/courses</a></li>
+      <li><a href="/offerings/1">/offerings/1</a></li>
+      <li><a href="/classes/1">/classes/1</a></li>
+    </ul>
+  </body>
+</html>
+`;
+
+const Q_CREATE_COURSE = `
+insert into Course(course_name) values(?);
+`;
+
+const Q_GET_ALL_COURSES = `
+select
+    Course.ident                as course_id,
+    Course.course_name          as course_name
+from
+    Course;
+`;
+
+const Q_UPDATE_COURSE = `
+update
+    Course
+set
+    course_name = ?
+where
+    ident = ?;
+`;
+
+const Q_DELETE_COURSE = `
+delete from
+    Course
+where
+    ident = ?;
+`;
+
+const Q_CREATE_OFFERING = `
+insert into Offering(course_id) values(?);
+`;
+
+const Q_GET_ALL_OFFERINGS_OF_COURSE = `
+select
+    Course.ident                as course_id,
+    Course.course_name          as course_name,
+    Offering.ident              as offering_id,
+    min(Class.class_date)       as start_date
+from
+    Course join Offering join Class
+on
+    Offering.course_id = Course.ident
+and
+    Class.offering_id = Offering.ident
+where
+    Course.ident = ?
+group by
+    Offering.ident;
+`;
+
+const Q_GET_COURSE_OF_OFFERING = `
+select
+    Course.ident		as course_id,
+    Course.course_name          as course_name,
+    min(Class.class_date)       as start_date
+from
+    Course join Offering join Class
+on
+    Offering.course_id = Course.ident
+and
+    Class.offering_id = Offering.ident
+where
+    Offering.ident = ?
+group by
+    Offering.ident;
+`;
+
+const Q_DELETE_OFFERING = `
+delete from
+    Offering
+where
+    ident = ?;
+`;
+
+const Q_CREATE_CLASS = `
+insert into Class(offering_id, class_date, class_time) values(?, ?, ?);
+`;
+
+const Q_GET_ALL_CLASSES_OF_OFFERING = `
+select
+    Course.ident                as course_id,
+    Course.course_name          as course_name,
+    Offering.ident              as offering_id,
+    Class.ident                 as class_id,
+    Class.class_date            as class_date,
+    Class.class_time            as class_time
+from
+    Course join Offering join Class
+on
+    Course.ident   = Offering.course_id and
+    Offering.ident = Class.offering_id
+where
+    Offering.ident = ?
+`;
+
+const Q_GET_ONE_CLASS_OF_OFFERING = `
+select
+    Course.ident                as course_id,
+    Course.course_name          as course_name
+from
+    Course join Offering join Class
+on
+    Offering.course_id = Course.ident
+and
+    Class.offering_id = Offering.ident
+where
+    Class.ident = ?;
+    `;
+
+const Q_GET_OFFERING_OF_CLASS = `
+select
+    Offering.ident		as offering_id
+from
+    Offering join Class
+on
+    Class.offering_id = Offering.ident
+where
+    Class.ident = ?;
+`;
+
+const Q_DELETE_CLASS = `
+delete from
+    Class
+where
+    ident = ?;
+`;
+
 // Main objects.
 const port = 3654;
 const app = express();
@@ -35,43 +174,18 @@ const db = new sqlite3.Database(db_path, sqlite3.OPEN_READWRITE, (err) => {
     if (err) console.log(`DATABASE ERROR ${err}`);
 });
 
-// Tell database to do cascading deletes.
-const query_cascade = `pragma foreign_keys = on;`
-db.run(query_cascade, function(err) {
-    if (err) console.log(`ERROR SETTING UP CASCADING DELETE ${err}`);
-});
-
 // Links to all endpoints for testing purposes.
 // "/" =>
 // HTML
 app.get('/', (req, res, next) => {
-    res.status(200).send(`
-<html>
-  <body>
-    <ul>
-      <li><a href="/courses">/courses</a></li>
-      <li><a href="/offerings/1">/offerings/1</a></li>
-      <li><a href="/classes/1">/classes/1</a></li>
-    </ul>
-  </body>
-</html>
-    `);
+    res.status(200).send(HOME_PAGE);
 });
 
 // List all courses
 // "/courses" =>
 // [{course_id, course_name}*]
 app.get('/courses', (req, res, next) => {
-
-    const query_select = `
-select
-    Course.ident                as course_id,
-    Course.course_name          as course_name
-from
-    Course;
-    `;
-
-    db.all(query_select, (err, rows) => {
+    db.all(Q_GET_ALL_COURSES, (err, rows) => {
         if (err) return next(err);
         res.status(200).json(rows);
     });
@@ -81,13 +195,8 @@ from
 // "/courses/add" + {course_name} =>
 // {course_id, course_name}
 app.post('/courses/add', (req, res, next) => {
-
-    const query_create = `
-insert into Course(course_name) values(?);
-    `;
-
     const course_name = req.body.course_name;
-    db.run(query_create, [course_name], function(err) {
+    db.run(Q_CREATE_COURSE, [course_name], function(err) {
         if (err) return next(err);
         const course_id = this.lastID;
         const code = 201;
@@ -103,19 +212,9 @@ insert into Course(course_name) values(?);
 // "/courses/update/<course_id>" + {course_name} =>
 // {course_id, course_name}
 app.post('/courses/update/:course_id', (req, res, next) => {
-
-    const query_update = `
-update
-    Course
-set
-    course_name = ?
-where
-    ident = ?;
-    `;
-
     const course_id = req.params.course_id;
     const course_name = req.body.course_name;
-    db.run(query_update, [course_name, course_id], function(err) {
+    db.run(Q_UPDATE_COURSE, [course_name, course_id], function(err) {
         if (err) return next(err);
         const code = 200;
         const result = {
@@ -130,25 +229,9 @@ where
 // "/courses/<course_id>" =>
 // [{course_id, course_name}*]
 app.delete('/courses/:course_id', (req, res, next) => {
-
-    const query_delete = `
-delete from
-    Course
-where
-    ident = ?;
-    `;
-
-    const query_select = `
-select
-    Course.ident                as course_id,
-    Course.course_name          as course_name
-from
-    Course;
-    `;
-
-    db.run(query_delete, [req.params.course_id], (err, rows) => {
+    db.run(Q_DELETE_COURSE, [req.params.course_id], (err, rows) => {
         if (err) return next(err);
-        db.all(query_select, (err, rows) => {
+        db.all(Q_GET_ALL_COURSES, (err, rows) => {
             if (err) return next(err);
             res.status(200).json(rows);
         });
@@ -160,26 +243,7 @@ from
 // [{course_id, course_name, offering_id, start_date}*]
 // where 'start_date' is the date of the earliest class.
 app.get('/offerings/:course_id', (req, res, next) => {
-
-    const query_select = `
-select
-    Course.ident                as course_id,
-    Course.course_name          as course_name,
-    Offering.ident              as offering_id,
-    min(Class.class_date)       as start_date
-from
-    Course join Offering join Class
-on
-    Offering.course_id = Course.ident
-and
-    Class.offering_id = Offering.ident
-where
-    Course.ident = ?
-group by
-    Offering.ident;
-    `;
-
-    db.all(query_select, [req.params.course_id], (err, rows) => {
+    db.all(Q_GET_ALL_OFFERINGS_OF_COURSE, [req.params.course_id], (err, rows) => {
         if (err) return next(err);
         res.status(200).json(rows);
     });
@@ -189,39 +253,13 @@ group by
 // "/offerings/<course_id>" + {class_date, class_time} =>
 // {course_id, course_name, offering_id, class_date, class_time}
 app.post('/offerings/:course_id', (req, res, next) => {
-
-    const query_create_offering = `
-insert into Offering(course_id) values(?);
-    `;
-
-    const query_create_class = `
-insert into Class(offering_id, class_date, class_time) values(?, ?, ?);
-    `;
-
-    const query_select = `
-select
-    Course.course_name          as course_name,
-    min(Class.class_date)       as start_date
-from
-    Course join Offering join Class
-on
-    Offering.course_id = Course.ident
-and
-    Class.offering_id = Offering.ident
-where
-    Course.ident = ? and
-    Offering.ident = ?
-group by
-    Offering.ident;
-    `;
-
     const course_id = parseInt(req.params.course_id);
     const class_date = req.body.start_date;
     const class_time = req.body.start_time;
-    db.run(query_create_offering, [course_id], function(err) {
+    db.run(Q_CREATE_OFFERING, [course_id], function(err) {
         if (err) return next(err);
         const offering_id = this.lastID;
-        db.run(query_create_class, [offering_id, class_date, class_time], function(err) {
+        db.run(Q_CREATE_CLASS, [offering_id, class_date, class_time], function(err) {
             if (err) return next(err);
             const code = 201;
             let result = {
@@ -229,7 +267,7 @@ group by
                 offering_id,
                 start_date: class_date,
             };
-            db.get(query_select, [course_id, offering_id], function(err, row) {
+            db.get(Q_GET_COURSE_OF_OFFERING, [offering_id], function(err, row) {
                 if (err) return next(err);
                 result['course_name'] = row['course_name'];
                 result['class_date'] = row['class_date'];
@@ -244,49 +282,12 @@ group by
 // [{course_id, course_name, offering_id, start_date}*]
 // where 'start_date' is the date of the earliest class.
 app.delete('/offerings/:offering_id', (req, res, next) => {
-
-    const query_course_id = `
-select
-    Course.ident		as course_id
-from
-    Course join Offering
-on
-    Offering.course_id = Course.ident
-where
-    Offering.ident = ?;
-    `;
-
-    const query_delete = `
-delete from
-    Offering
-where
-    ident = ?;
-    `;
-
-    const query_select = `
-select
-    Course.ident                as course_id,
-    Course.course_name          as course_name,
-    Offering.ident              as offering_id,
-    min(Class.class_date)       as start_date
-from
-    Course join Offering join Class
-on
-    Offering.course_id = Course.ident
-and
-    Class.offering_id = Offering.ident
-where
-    Course.ident = ?
-group by
-    Offering.ident;
-    `;
-
-    db.get(query_course_id, [req.params.offering_id], (err, row) => {
+    db.get(Q_GET_COURSE_OF_OFFERING, [req.params.offering_id], (err, row) => {
         if (err) return next(err);
         const course_id = row['course_id'];
-        db.run(query_delete, [req.params.offering_id], (err, rows) => {
+        db.run(Q_DELETE_OFFERING, [req.params.offering_id], (err, rows) => {
             if (err) return next(err);
-            db.all(query_select, [course_id], (err, rows) => {
+            db.all(Q_GET_ALL_OFFERINGS_OF_COURSE, [course_id], (err, rows) => {
                 if (err) return next(err);
                 res.status(200).json(rows);
             });
@@ -298,25 +299,7 @@ group by
 // "/classes/<offering_id>" =>
 // [{course_id, course_name, offering_id, class_id, class_date, class_time}*]
 app.get('/classes/:offering_id', (req, res, next) => {
-
-    const query_select = `
-select
-    Course.ident                as course_id,
-    Course.course_name          as course_name,
-    Offering.ident              as offering_id,
-    Class.ident                 as class_id,
-    Class.class_date            as class_date,
-    Class.class_time            as class_time
-from
-    Course join Offering join Class
-on
-    Course.ident   = Offering.course_id and
-    Offering.ident = Class.offering_id
-where
-    Offering.ident = ?
-    `;
-
-    db.all(query_select, [req.params.offering_id], (err, rows) => {
+    db.all(Q_GET_ALL_CLASSES_OF_OFFERING, [req.params.offering_id], (err, rows) => {
         if (err) return next(err);
         res.status(200).json(rows);
     });
@@ -326,29 +309,10 @@ where
 // "/classes/<offering_id>" + {class_date, class_time} =>
 // {course_id, course_name, offering_id, class_id, class_date, class_time}
 app.post('/classes/:offering_id', (req, res, next) => {
-
-    const query_create_class = `
-insert into Class(offering_id, class_date, class_time) values(?, ?, ?);
-    `;
-
-    const query_select = `
-select
-    Course.ident                as course_id,
-    Course.course_name          as course_name
-from
-    Course join Offering join Class
-on
-    Offering.course_id = Course.ident
-and
-    Class.offering_id = Offering.ident
-where
-    Class.ident = ?;
-    `;
-
     const offering_id = parseInt(req.params.offering_id);
     const class_date = req.body.class_date;
     const class_time = req.body.class_time;
-    db.run(query_create_class, [offering_id, class_date, class_time], function(err) {
+    db.run(Q_CREATE_CLASS, [offering_id, class_date, class_time], function(err) {
         if (err) return next(err);
         const code = 201;
         const class_id = this.lastID;
@@ -358,7 +322,7 @@ where
             class_date,
             class_time
         };
-        db.get(query_select, [class_id], function(err, row) {
+        db.get(Q_GET_OFFERING_OF_CLASS, [class_id], function(err, row) {
             if (err) return next(err);
             result['course_id'] = row['course_id'];
             result['course_name'] = row['course_name'];
@@ -371,48 +335,12 @@ where
 // "/classes/<class_id>" =>
 // [{course_id, course_name, offering_id, class_id, class_date, class_time}*]
 app.delete('/classes/:class_id', (req, res, next) => {
-
-    const query_offering_id = `
-select
-    Offering.ident		as offering_id
-from
-    Offering join Class
-on
-    Class.offering_id = Offering.ident
-where
-    Class.ident = ?;
-    `;
-
-    const query_delete = `
-delete from
-    Class
-where
-    ident = ?;
-    `;
-
-    const query_select = `
-select
-    Course.ident                as course_id,
-    Course.course_name          as course_name,
-    Offering.ident              as offering_id,
-    Class.ident                 as class_id,
-    Class.class_date            as class_date,
-    Class.class_time            as class_time
-from
-    Course join Offering join Class
-on
-    Course.ident   = Offering.course_id and
-    Offering.ident = Class.offering_id
-where
-    Offering.ident = ?
-    `;
-
-    db.get(query_offering_id, [req.params.class_id], (err, row) => {
+    db.get(Q_GET_OFFERING_OF_CLASS, [req.params.class_id], (err, row) => {
         if (err) return next(err);
         const offering_id = row['offering_id'];
-        db.run(query_delete, [req.params.class_id], (err, rows) => {
+        db.run(Q_DELETE_CLASS, [req.params.class_id], (err, rows) => {
             if (err) return next(err);
-            db.all(query_select, [offering_id], (err, rows) => {
+            db.all(Q_GET_ALL_CLASSES_OF_OFFERING, [offering_id], (err, rows) => {
                 if (err) return next(err);
                 res.status(200).json(rows);
             });
