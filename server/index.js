@@ -9,11 +9,7 @@ const cors = require('cors'); // https://github.com/rangle/hub/wiki/CORS
 
 // Main objects.
 const port = 3654;
-const db_path = path.join(__dirname, 'academy.db');
 const app = express();
-const db = new sqlite3.Database(db_path, sqlite3.OPEN_READWRITE, (err) => {
-    if (err) console.log(`DATABASE ERROR ${err}`);
-});
 
 // Tell server to accept cross-origin requests.
 app.use(cors());
@@ -32,6 +28,18 @@ app.use(expressWinston.logger({
     meta: false,
     msg: "HTTP {{res.statusCode}} {{req.method}} {{req.url}}"
 }));
+
+// Connect to database.
+const db_path = path.join(__dirname, 'academy.db');
+const db = new sqlite3.Database(db_path, sqlite3.OPEN_READWRITE, (err) => {
+    if (err) console.log(`DATABASE ERROR ${err}`);
+});
+
+// Tell database to do cascading deletes.
+const query_cascade = `pragma foreign_keys = on;`
+db.run(query_cascade, function(err) {
+    if (err) console.log(`ERROR SETTING UP CASCADING DELETE ${err}`);
+});
 
 // Links to all endpoints for testing purposes.
 // "/" =>
@@ -70,9 +78,9 @@ from
 });
 
 // Add a course
-// "/courses" + {course_name} =>
+// "/courses/add" + {course_name} =>
 // {course_id, course_name}
-app.post('/courses', (req, res, next) => {
+app.post('/courses/add', (req, res, next) => {
 
     const query_create = `
 insert into Course(course_name) values(?);
@@ -83,6 +91,33 @@ insert into Course(course_name) values(?);
         if (err) return next(err);
         const course_id = this.lastID;
         const code = 201;
+        const result = {
+            course_id,
+            course_name
+        };
+        res.status(code).json(result);
+    });
+});
+
+// Update a course
+// "/courses/update/<course_id>" + {course_name} =>
+// {course_id, course_name}
+app.post('/courses/update/:course_id', (req, res, next) => {
+
+    const query_update = `
+update
+    Course
+set
+    course_name = ?
+where
+    ident = ?;
+    `;
+
+    const course_id = req.params.course_id;
+    const course_name = req.body.course_name;
+    db.run(query_update, [course_name, course_id], function(err) {
+        if (err) return next(err);
+        const code = 200;
         const result = {
             course_id,
             course_name

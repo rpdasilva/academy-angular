@@ -42,6 +42,20 @@ export class CoursesComponent implements OnInit {
       });
   }
 
+  onEditName(rec, name) {
+    console.log('editing name of', rec, 'with new name', name);
+    this.backend.updateCourse(rec.course_id, name).subscribe(
+      ({success, payload}) => {
+	if (success) {
+	  rec.course_name = name;
+	  this.errorMessage = '';
+	}
+	else {
+	  this.errorMessage = payload;
+	}
+      });
+  }
+
   onDeleteCourse(rec) {
     this.backend.deleteCourse(rec.course_id).subscribe(
       ({success, payload}) => {

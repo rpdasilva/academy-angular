@@ -1,3 +1,5 @@
+pragma foreign_keys = on;
+
 -- All courses that have ever existed.
 create table Course(
 	ident		integer unique not null primary key,
@@ -10,7 +12,8 @@ insert into Course values(2, "Creating Confusing User Interfaces");
 -- All offerings of all courses.
 create table Offering(
 	ident		integer unique not null primary key,
-	course_id	integer not null references Course(ident)
+	course_id	integer not null,
+	foreign key(course_id) references Course(ident) on delete cascade
 );
 
 insert into Offering values(1, 1); -- Bugs #1
@@ -22,9 +25,10 @@ insert into Offering values(5, 2); -- UX #2
 -- When offerings occurred (to handle multi-part courses).
 create table Class(
 	ident		integer unique not null primary key,
-	offering_id	integer not null references Offering(ident),
+	offering_id	integer not null,
 	class_date	text not null, -- YYYY-MM-DD
-	class_time	text not null  -- HH:MM (24-hour clock)
+	class_time	text not null, -- HH:MM (24-hour clock)
+	foreign key(offering_id) references Offering(ident) on delete cascade
 );
 
 insert into Class values(1, 1, '2017-01-01', '09:00'); -- Bugs #1 only class

@@ -16,8 +16,14 @@ export class BackendService {
   }
 
   addCourse(course_name: string): Observable<any> {
-    return this.addData(
-      `${this.base}/courses`,
+    return this.postData(
+      `${this.base}/courses/add`,
+      {course_name});
+  }
+
+  updateCourse(course_id: number, course_name: string): Observable<any> {
+    return this.postData(
+      `${this.base}/courses/update/${course_id}`,
       {course_name});
   }
 
@@ -30,7 +36,7 @@ export class BackendService {
   }
 
   addOffering(course_id: number, start_date: string, start_time: string): Observable<any> {
-    return this.addData(
+    return this.postData(
       `${this.base}/offerings/${course_id}`,
       {start_date, start_time});
   }
@@ -44,7 +50,7 @@ export class BackendService {
   }
 
   addClass(offering_id: number, class_date: string, class_time: string): Observable<any> {
-    return this.addData(
+    return this.postData(
       `${this.base}/classes/${offering_id}`,
       {class_date, class_time});
   }
@@ -57,16 +63,24 @@ export class BackendService {
     return this.http.get(url).map(res => res.json());
   }
 
-  private addData(url: string, body: Object) {
+  private postData(url: string, body: Object) {
     return this.http.post(url, body)
-      .map(res => ({success: true, payload: res.json()}))
-      .catch(err => Observable.of({success: false, payload: 'SERVER ERROR'}));
+      .map(res => this.standardSuccess(res))
+      .catch(err => Observable.of(this.standardError(err)));
   }
 
   private deleteData(url: string) {
     return this.http.delete(url)
-      .map(res => ({success: true, payload: res.json()}))
-      .catch(err => Observable.of({success: false, payload: 'SERVER ERROR'}));
+      .map(res => this.standardSuccess(res))
+      .catch(err => Observable.of(this.standardError(err)));
+  }
+
+  private standardSuccess(res: any) {
+    return {success: true, payload: res.json()};
+  }
+
+  private standardError(res: any) {
+    return {success: false, payload: 'SERVER ERROR'};
   }
 
 }
