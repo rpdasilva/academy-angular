@@ -5,11 +5,13 @@
       <th>Class ID</th>
       <th>Date</th>
       <th>Time</th>
+      <th>Delete</th>
     </tr>
     <tr *ngFor="let rec of classes">
       <td (click)="onSelect(rec)">{{rec.class_id}}</td>
       <td>{{rec.class_date}}</td>
       <td>{{rec.class_time}}</td>
+      <td><button (click)="onDeleteClass(rec)">delete</button></td>
     </tr>
   </table>
   <p>

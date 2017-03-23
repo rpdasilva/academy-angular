@@ -64,4 +64,17 @@ export class ClassesComponent implements OnInit {
       });
   }
 
+  onDeleteClass(rec) {
+    this.backend.deleteClass(rec.class_id).subscribe(
+      ({success, payload}) => {
+        if (success) {
+          this.classes = payload;
+          this.errorMessage = '';
+        }
+        else {
+          this.errorMessage = payload;
+        }
+      });
+  }
+
 }

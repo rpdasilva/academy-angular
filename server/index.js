@@ -332,5 +332,58 @@ where
     });
 });
 
+// Delete a class
+// "/classes/<class_id>" =>
+// [{course_id, course_name, offering_id, class_id, class_date, class_time}*]
+app.delete('/classes/:class_id', (req, res, next) => {
+
+    const query_offering_id = `
+select
+    Offering.ident		as offering_id
+from
+    Offering join Class
+on
+    Class.offering_id = Offering.ident
+where
+    Class.ident = ?;
+    `;
+
+    const query_delete = `
+delete from
+    Class
+where
+    ident = ?;
+    `;
+
+    const query_select = `
+select
+    Course.ident                as course_id,
+    Course.course_name          as course_name,
+    Offering.ident              as offering_id,
+    Class.ident                 as class_id,
+    Class.class_date            as class_date,
+    Class.class_time            as class_time
+from
+    Course join Offering join Class
+on
+    Course.ident   = Offering.course_id and
+    Offering.ident = Class.offering_id
+where
+    Offering.ident = ?
+    `;
+
+    db.get(query_offering_id, [req.params.class_id], (err, row) => {
+        if (err) return next(err);
+        const offering_id = row['offering_id'];
+        db.run(query_delete, [req.params.class_id], (err, rows) => {
+            if (err) return next(err);
+            db.all(query_select, [offering_id], (err, rows) => {
+                if (err) return next(err);
+                res.status(200).json(rows);
+            });
+        });
+    });
+});
+
 // Run
 app.listen(port, () => {console.log('listening...');});
