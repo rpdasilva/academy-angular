@@ -48,13 +48,13 @@ select
     Course.ident                as course_id,
     Course.course_name          as course_name,
     Offering.ident              as offering_id,
-    count(*)                    as num_classes
+    count(Class.offering_id)    as num_classes
 from
-    Course join Offering join Class
+    Course join (Offering left join Class)
 on
-    Offering.course_id = Course.ident
+    Course.ident = Offering.course_id
 and
-    Class.offering_id = Offering.ident
+    Offering.ident = Class.offering_id
 where
     Course.ident = ?
 group by
@@ -68,7 +68,7 @@ select
 from
     Course join Offering
 on
-    Offering.course_id = Course.ident
+    Course.ident = Offering.course_id
 where
     Offering.ident = ?;
 `;
@@ -92,7 +92,8 @@ select
 from
     Course join Offering join Class
 on
-    Course.ident   = Offering.course_id and
+    Course.ident   = Offering.course_id
+and
     Offering.ident = Class.offering_id
 where
     Offering.ident = ?
@@ -106,9 +107,9 @@ select
 from
     Course join Offering join Class
 on
-    Offering.course_id = Course.ident
+    Course.ident = Offering.course_id
 and
-    Class.offering_id = Offering.ident
+    Offering.ident = Class.offering_id
 where
     Class.ident = ?;
 `;
