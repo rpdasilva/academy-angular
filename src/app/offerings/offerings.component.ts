@@ -14,9 +14,6 @@ export class OfferingsComponent implements OnInit {
   courseName: string = '';
   errorMessage: string = '';
 
-  newOfferingStartDate: string = '';
-  newOfferingStartTime: string = '';
-
   constructor(
     private backend: BackendService,
     private store: StoreService
@@ -49,8 +46,8 @@ export class OfferingsComponent implements OnInit {
     this.store.setCurrentOffering(rec.offering_id);
   }
 
-  onNewOffering(startDate, startTime) {
-    this.backend.addOffering(this.courseId, startDate, startTime).subscribe(
+  onNewOffering() {
+    this.backend.addOffering(this.courseId).subscribe(
       ({success, payload}) => {
 	if (success) {
 	  this.offerings = [...this.offerings, payload];

@@ -35,10 +35,10 @@ export class BackendService {
     return this.getData(`${this.base}/offerings/${course_id}`);
   }
 
-  addOffering(course_id: number, start_date: string, start_time: string): Observable<any> {
+  addOffering(course_id: number): Observable<any> {
     return this.postData(
       `${this.base}/offerings/${course_id}`,
-      {start_date, start_time});
+      {});
   }
 
   deleteOffering(offering_id: number): Observable<any> {
