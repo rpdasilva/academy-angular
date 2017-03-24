@@ -36,7 +36,9 @@ update Course set course_name = ? where ident = ?;
 `;
 
 const X_DELETE_COURSE = [
-    'delete from Course where ident = ?;'
+    'delete from Class where offering_id in (select ident from Offering where course_id = ?);',
+    'delete from Offering where course_id = ?;',
+    'delete from Course where ident = ?;',
 ];
 
 const Q_CREATE_OFFERING = `
@@ -74,7 +76,8 @@ where
 `;
 
 const X_DELETE_OFFERING = [
-    'delete from Offering where ident = ?;'
+    'delete from Class where offering_id = ?;',
+    'delete from Offering where ident = ?;',
 ];
 
 const Q_CREATE_CLASS = `
@@ -156,7 +159,7 @@ app.get('/', (req, res, next) => {
 // "/courses" =>
 // [{course_id, course_name}*]
 app.get('/courses', (req, res, next) => {
-    db.all(Q_GET_ALL_COURSES, (err, rows) => {
+    db.all(Q_GET_ALL_COURSES, [], function(err, rows){
         if (err) return next(err);
         res.status(200).json(rows);
     });
@@ -200,9 +203,9 @@ app.post('/courses/update/:course_id', (req, res, next) => {
 // "/courses/<course_id>" =>
 // [{course_id, course_name}*]
 app.delete('/courses/:course_id', (req, res, next) => {
-    let err = run_all(X_DELETE_COURSE, [req.params.course_id]);
+    let err = transact(X_DELETE_COURSE, [req.params.course_id]);
     if (err) return next(err);
-    db.all(Q_GET_ALL_COURSES, (err, rows) => {
+    db.all(Q_GET_ALL_COURSES, [], function(err, rows){
         if (err) return next(err);
         res.status(200).json(rows);
     });
@@ -213,7 +216,7 @@ app.delete('/courses/:course_id', (req, res, next) => {
 // [{course_id, course_name, offering_id, start_date}*]
 // where 'start_date' is the date of the earliest class.
 app.get('/offerings/:course_id', (req, res, next) => {
-    db.all(Q_GET_ALL_OFFERINGS_OF_COURSE, [req.params.course_id], (err, rows) => {
+    db.all(Q_GET_ALL_OFFERINGS_OF_COURSE, [req.params.course_id], function(err, rows){
         if (err) return next(err);
         res.status(200).json(rows);
     });
@@ -245,12 +248,12 @@ app.post('/offerings/:course_id', (req, res, next) => {
 // [{course_id, course_name, offering_id, start_date}*]
 // where 'start_date' is the date of the earliest class.
 app.delete('/offerings/:offering_id', (req, res, next) => {
-    db.get(Q_GET_COURSE_OF_OFFERING, [req.params.offering_id], (err, row) => {
+    db.get(Q_GET_COURSE_OF_OFFERING, [req.params.offering_id], function(err, row){
         if (err) return next(err);
         const course_id = row['course_id'];
-        err = run_all(X_DELETE_OFFERING, [req.params.offering_id]);
+        err = transact(X_DELETE_OFFERING, [req.params.offering_id]);
         if (err) return next(err);
-        db.all(Q_GET_ALL_OFFERINGS_OF_COURSE, [course_id], (err, rows) => {
+        db.all(Q_GET_ALL_OFFERINGS_OF_COURSE, [course_id], function(err, rows){
             if (err) return next(err);
             res.status(200).json(rows);
         });
@@ -261,7 +264,7 @@ app.delete('/offerings/:offering_id', (req, res, next) => {
 // "/classes/<offering_id>" =>
 // [{course_id, course_name, offering_id, class_id, class_date, class_time}*]
 app.get('/classes/:offering_id', (req, res, next) => {
-    db.all(Q_GET_ALL_CLASSES_OF_OFFERING, [req.params.offering_id], (err, rows) => {
+    db.all(Q_GET_ALL_CLASSES_OF_OFFERING, [req.params.offering_id], function(err, rows){
         if (err) return next(err);
         res.status(200).json(rows);
     });
@@ -297,28 +300,30 @@ app.post('/classes/:offering_id', (req, res, next) => {
 // "/classes/<class_id>" =>
 // [{course_id, course_name, offering_id, class_id, class_date, class_time}*]
 app.delete('/classes/:class_id', (req, res, next) => {
-    db.get(Q_GET_COURSE_AND_OFFERING_OF_CLASS, [req.params.class_id], (err, row) => {
+    db.get(Q_GET_COURSE_AND_OFFERING_OF_CLASS, [req.params.class_id], function(err, row){
         if (err) return next(err);
         const offering_id = row['offering_id'];
-        err = run_all(X_DELETE_CLASS, [req.params.class_id]);
+        err = transact(X_DELETE_CLASS, [req.params.class_id]);
         if (err) return next(err);
-        db.all(Q_GET_ALL_CLASSES_OF_OFFERING, [offering_id], (err, rows) => {
+        db.all(Q_GET_ALL_CLASSES_OF_OFFERING, [offering_id], function(err, rows){
             if (err) return next(err);
             res.status(200).json(rows);
         });
     });
 });
 
-function run_all(commands, parameters) {
-    console.log('run_all', commands, parameters);
+function transact(commands, parameters) {
+    db.run('begin transaction;', [], function(err){
+	if (err) return err;
+    });
     for (let i in commands) {
-	console.log('...', commands[i]);
-	db.run(commands[i], parameters, (err) => {
-	    console.log('......returning error', err);
+	db.run(commands[i], parameters, function(err){
 	    if (err) return err;
 	});
     }
-    console.log('......null');
+    db.run('commit;', [], function(err){
+	if (err) return err;
+    });
     return null;
 }
 
