@@ -45,10 +45,6 @@ export class ClassesComponent implements OnInit {
     return this.offeringId != NOT_SET;
   }
 
-  onSelect(rec) {
-    this.store.setCurrentClass(rec.class_id);
-  }
-
   onNewClass(classDate, classTime) {
     this.backend.addClass(this.offeringId, classDate, classTime).subscribe(
       ({success, payload}) => {

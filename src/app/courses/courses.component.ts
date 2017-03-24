@@ -11,6 +11,7 @@ export class CoursesComponent implements OnInit {
 
   courses: Object[] = [];
   newCourseName: string = '';
+  currentCourseId: number = NOT_SET;
 
   constructor(
     private backend: BackendService,
@@ -21,11 +22,13 @@ export class CoursesComponent implements OnInit {
   ngOnInit() {
     this.store.courseList.subscribe(
       newCourses => {this.courses = newCourses;});
+    this.store.currentCourseId.subscribe(
+      newCurrentCourseId => {this.currentCourseId = newCurrentCourseId;});
     this.backend.getCourses();
   }
 
   onSelectCourse(rec) {
-    this.store.setCurrentCourse(rec.course_id);
+    this.store.setCurrentCourseId(rec.course_id);
   }
 
   onNewCourse(name) {

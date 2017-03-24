@@ -20,7 +20,7 @@ export class OfferingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store.currentCourse.subscribe((courseId) => {
+    this.store.currentCourseId.subscribe((courseId) => {
       this.courseId = courseId;
       if (courseId == NOT_SET){
 	this.offerings = [];
