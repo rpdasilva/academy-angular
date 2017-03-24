@@ -2,33 +2,51 @@ import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
-
+import { StoreService} from './store.service';
 
 @Injectable()
 export class BackendService {
 
   private base = 'http://localhost:3654';
 
-  constructor(private http: Http) { }
-
-  getCourses(): Observable<any> {
-    return this.getData(`${this.base}/courses`);
+  constructor(
+    private http: Http,
+    private store: StoreService
+  ) {
   }
 
-  addCourse(course_name: string): Observable<any> {
-    return this.postData(
-      `${this.base}/courses/add`,
-      {course_name});
+  getCourses() {
+    const url = `${this.base}/courses`;
+    this.getData(url).subscribe(
+      (courses) => {this.store.setCourseList(courses)},
+      (err) => {this.store.setErrorMessage(err.statusText)}
+    );
   }
 
-  updateCourse(course_id: number, course_name: string): Observable<any> {
-    return this.postData(
-      `${this.base}/courses/update/${course_id}`,
-      {course_name});
+  addCourse(course_name: string) {
+    const url = `${this.base}/courses/add`;
+    const body = {course_name};
+    this.postData(url, body).subscribe(
+      ({course_id, course_name}) => {this.store.addCourse(course_id, course_name)},
+      (err) => {this.store.setErrorMessage(err.statusText)}
+    );
   }
 
-  deleteCourse(course_id: number): Observable<any> {
-    return this.deleteData(`${this.base}/courses/${course_id}`);
+  changeCourseName(course_id: number, course_name: string) {
+    const url = `${this.base}/courses/update/${course_id}`;
+    const body = {course_name};
+    this.postData(url, body).subscribe(
+      ({course_id, course_name}) => {this.store.updateCourse(course_id, course_name)},
+      (err) => {this.store.setErrorMessage(err.statusText)}
+    );
+  }
+
+  deleteCourse(course_id: number) {
+    const url = `${this.base}/courses/${course_id}`;
+    this.deleteData(url).subscribe(
+      (courses) => {this.store.setCourseList(courses)},
+      (err) => {this.store.setErrorMessage(err.statusText)}
+    );
   }
 
   getOfferings(course_id: number): Observable<any> {
@@ -63,24 +81,11 @@ export class BackendService {
     return this.http.get(url).map(res => res.json());
   }
 
-  private postData(url: string, body: Object) {
-    return this.http.post(url, body)
-      .map(res => this.standardSuccess(res))
-      .catch(err => Observable.of(this.standardError(err)));
+  private postData(url: string, body: Object): Observable<any> {
+    return this.http.post(url, body).map(res => res.json());
   }
 
-  private deleteData(url: string) {
-    return this.http.delete(url)
-      .map(res => this.standardSuccess(res))
-      .catch(err => Observable.of(this.standardError(err)));
+  private deleteData(url: string): Observable<any> {
+    return this.http.delete(url).map(res => res.json());
   }
-
-  private standardSuccess(res: any) {
-    return {success: true, payload: res.json()};
-  }
-
-  private standardError(res: any) {
-    return {success: false, payload: 'SERVER ERROR'};
-  }
-
 }

@@ -9,13 +9,15 @@ import { OfferingsComponent } from './offerings/offerings.component';
 import { ClassesComponent } from './classes/classes.component';
 import { BackendService } from './backend.service';
 import { StoreService } from './store.service';
+import { ErrmsgComponent } from './errmsg/errmsg.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     CoursesComponent,
     OfferingsComponent,
-    ClassesComponent
+    ClassesComponent,
+    ErrmsgComponent
   ],
   imports: [
     BrowserModule,

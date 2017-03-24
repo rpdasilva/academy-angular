@@ -10,7 +10,6 @@ import { StoreService, NOT_SET } from '../store.service';
 export class CoursesComponent implements OnInit {
 
   courses: Object[] = [];
-  errorMessage: string = '';
   newCourseName: string = '';
 
   constructor(
@@ -20,53 +19,25 @@ export class CoursesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.backend.getCourses().subscribe(
-      body => {this.courses = body;});
+    this.store.courseList.subscribe(
+      newCourses => {this.courses = newCourses;});
+    this.backend.getCourses();
   }
 
   onSelectCourse(rec) {
     this.store.setCurrentCourse(rec.course_id);
-    this.errorMessage = '';
   }
 
   onNewCourse(name) {
-    this.backend.addCourse(name).subscribe(
-      ({success, payload}) => {
-	if (success) {
-          this.courses = [...this.courses, payload];
-	  this.errorMessage = '';
-	}
-	else {
-	  this.errorMessage = payload;
-	}
-      });
+    this.backend.addCourse(name);
   }
 
   onEditName(rec, name) {
-    console.log('editing name of', rec, 'with new name', name);
-    this.backend.updateCourse(rec.course_id, name).subscribe(
-      ({success, payload}) => {
-	if (success) {
-	  rec.course_name = name;
-	  this.errorMessage = '';
-	}
-	else {
-	  this.errorMessage = payload;
-	}
-      });
+    this.backend.changeCourseName(rec.course_id, name);
   }
 
   onDeleteCourse(rec) {
-    this.backend.deleteCourse(rec.course_id).subscribe(
-      ({success, payload}) => {
-        if (success) {
-          this.courses = payload;
-          this.errorMessage = '';
-        }
-        else {
-          this.errorMessage = payload;
-        }
-      });
+    this.backend.deleteCourse(rec.course_id);
   }
 
 }

@@ -12,7 +12,6 @@ export class OfferingsComponent implements OnInit {
   offerings: Object[] = [];
   courseId: number = NOT_SET;
   courseName: string = '';
-  errorMessage: string = '';
 
   constructor(
     private backend: BackendService,
@@ -23,7 +22,6 @@ export class OfferingsComponent implements OnInit {
   ngOnInit() {
     this.store.currentCourse.subscribe((courseId) => {
       this.courseId = courseId;
-      this.errorMessage = '';
       if (courseId == NOT_SET){
 	this.offerings = [];
 	this.courseName = '';
@@ -51,10 +49,6 @@ export class OfferingsComponent implements OnInit {
       ({success, payload}) => {
 	if (success) {
 	  this.offerings = [...this.offerings, payload];
-	  this.errorMessage = '';
-	}
-	else {
-	  this.errorMessage = payload;
 	}
       });
   }
@@ -64,12 +58,7 @@ export class OfferingsComponent implements OnInit {
       ({success, payload}) => {
         if (success) {
           this.offerings = payload;
-          this.errorMessage = '';
-        }
-        else {
-          this.errorMessage = payload;
         }
       });
   }
-
 }
