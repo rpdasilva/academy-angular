@@ -3,19 +3,17 @@
   <table border="1">
     <tr>
       <th>Offering ID</th>
-      <th>Start Date</th>
+      <th>Number of Classes</th>
       <th>Delete</th>
     </tr>
     <tr *ngFor="let rec of offerings">
       <td (click)="onSelect(rec)">{{rec.offering_id}}</td>
-      <td (click)="onSelect(rec)">{{rec.start_date}}</td>
+      <td (click)="onSelect(rec)">{{rec.num_classes}}</td>
       <td><button (click)="onDeleteOffering(rec)">delete</button></td>
     </tr>
   </table>
   <p>
-    <button (click)="onNewOffering(newOfferingStartDate, newOfferingStartTime)">New</button>
-    <input [(ngModel)]="newOfferingStartDate" placeholder="new offering start date (YYYY-MM-DD)" size="30"/>
-    <input [(ngModel)]="newOfferingStartTime" placeholder="new offering start time (HH:MM)" size="30"/>
+    <button (click)="onNewOffering()">New</button>
   </p>
   <p *ngIf="errorMessage">{{errorMessage}}</p>
 </div>
