@@ -10,8 +10,9 @@ import { StoreService, NOT_SET } from '../store.service';
 export class OfferingsComponent implements OnInit {
 
   offerings: Object[] = [];
-  courseId: number = NOT_SET;
-  courseName: string = '';
+  currentCourseId: number = NOT_SET;
+  currentCourseName: string = '';
+  currentOfferingId: number = NOT_SET;
 
   constructor(
     private backend: BackendService,
@@ -20,45 +21,36 @@ export class OfferingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store.currentCourseId.subscribe((courseId) => {
-      this.courseId = courseId;
-      if (courseId == NOT_SET){
-	this.offerings = [];
-	this.courseName = '';
-      }
-      else {
-	this.backend.getOfferings(courseId).subscribe(
-	  body => {
-	    this.offerings = body;
-	    this.courseName = body[0].course_name
-	  });
-      }
-    });
+    this.store.offeringList.subscribe(
+      freshOfferings => {this.offerings = freshOfferings;});
+    this.store.currentCourseId.subscribe(
+      freshCourseId => {
+	this.currentCourseId = freshCourseId;
+	this.backend.getOfferings(freshCourseId);
+      });
+    this.store.currentCourseName.subscribe(
+      freshCourseName => {
+	this.currentCourseName = freshCourseName;
+      });
+    this.store.currentOfferingId.subscribe(
+      freshOfferingId => {
+	this.currentOfferingId = freshOfferingId;
+      });
   }
 
   isVisible() {
-    return this.courseId != NOT_SET;
+    return this.currentCourseId != NOT_SET;
   }
 
   onSelect(rec) {
-    this.store.setCurrentOffering(rec.offering_id);
+    this.store.setCurrentOfferingId(rec.offering_id);
   }
 
   onNewOffering() {
-    this.backend.addOffering(this.courseId).subscribe(
-      ({success, payload}) => {
-	if (success) {
-	  this.offerings = [...this.offerings, payload];
-	}
-      });
+    this.backend.addOffering(this.currentCourseId);
   }
 
   onDeleteOffering(rec) {
-    this.backend.deleteOffering(rec.offering_id).subscribe(
-      ({success, payload}) => {
-        if (success) {
-          this.offerings = payload;
-        }
-      });
+    this.backend.deleteOffering(rec.offering_id);
   }
 }

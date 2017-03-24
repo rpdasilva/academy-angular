@@ -49,18 +49,29 @@ export class BackendService {
     );
   }
 
-  getOfferings(course_id: number): Observable<any> {
-    return this.getData(`${this.base}/offerings/${course_id}`);
+  getOfferings(course_id: number) {
+    const url = `${this.base}/offerings/${course_id}`;
+    return this.getData(url).subscribe(
+      (offerings) => {this.store.setOfferingList(offerings)},
+      (err) => {this.store.setErrorMessage(err.statusText)}
+    );
   }
 
-  addOffering(course_id: number): Observable<any> {
-    return this.postData(
-      `${this.base}/offerings/${course_id}`,
-      {});
+  addOffering(course_id: number) {
+    const url = `${this.base}/offerings/${course_id}`;
+    const body = {};
+    return this.postData(url, body).subscribe(
+      ({course_id, course_name, offering_id, num_classes}) => {this.store.addOffering(course_id, course_name, offering_id, num_classes)},
+      (err) => {this.store.setErrorMessage(err.statusText)}
+    );
   }
 
-  deleteOffering(offering_id: number): Observable<any> {
-    return this.deleteData(`${this.base}/offerings/${offering_id}`);
+  deleteOffering(offering_id: number) {
+    const url = `${this.base}/offerings/${offering_id}`;
+    return this.deleteData(url).subscribe(
+      (offerings) => {this.store.setOfferingList(offerings)},
+      (err) => {this.store.setErrorMessage(err.statusText)}
+    );
   }
 
   getClasses(offering_id: number): Observable<any> {

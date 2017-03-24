@@ -6,10 +6,12 @@ export const NOT_SET = -1;
 @Injectable()
 export class StoreService {
 
-  errorMessage    = new BehaviorSubject('');
-  courseList      = new BehaviorSubject([]);
-  currentCourseId = new BehaviorSubject(NOT_SET);
-  currentOffering = new BehaviorSubject(NOT_SET);
+  errorMessage      = new BehaviorSubject('');
+  courseList        = new BehaviorSubject([]);
+  currentCourseId   = new BehaviorSubject(NOT_SET);
+  currentCourseName = new BehaviorSubject('');
+  offeringList      = new BehaviorSubject([]);
+  currentOfferingId = new BehaviorSubject(NOT_SET);
 
   constructor() { }
 
@@ -27,7 +29,7 @@ export class StoreService {
       .subscribe(courses =>
 		 this.courseList.next([...courses,
 				       {course_id, course_name}]));
-    this.setCurrentCourseId(course_id);
+    this.setCurrentCourse(course_id, course_name);
     this.errorMessage.next('');
   }
 
@@ -42,16 +44,31 @@ export class StoreService {
 	}
       }))
       .subscribe(courses => this.courseList.next(courses));
-    this.setCurrentCourseId(course_id);
+    this.setCurrentCourse(course_id, course_name);
     this.errorMessage.next('');
   }
 
-  setCurrentCourseId(course_id) {
+  setCurrentCourse(course_id, course_name) {
     this.currentCourseId.next(course_id);
-    this.currentOffering.next(NOT_SET);
+    this.currentCourseName.next(course_name);
+    this.currentOfferingId.next(NOT_SET);
   }
 
-  setCurrentOffering(offering_id) {
-    this.currentOffering.next(offering_id);
+  setOfferingList(newOfferings) {
+    this.offeringList.next(newOfferings);
+    this.errorMessage.next('');
+  }
+
+  addOffering(course_id, course_name, offering_id, num_classes) {
+    this.offeringList.take(1)
+      .subscribe(offerings =>
+		 this.offeringList.next([...offerings,
+					 {course_id, course_name, offering_id, num_classes}]));
+    this.setCurrentOfferingId(offering_id);
+    this.errorMessage.next('');
+  }
+
+  setCurrentOfferingId(offering_id) {
+    this.currentOfferingId.next(offering_id);
   }
 }

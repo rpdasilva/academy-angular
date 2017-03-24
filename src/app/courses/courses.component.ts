@@ -21,14 +21,14 @@ export class CoursesComponent implements OnInit {
 
   ngOnInit() {
     this.store.courseList.subscribe(
-      newCourses => {this.courses = newCourses;});
+      freshCourses => {this.courses = freshCourses;});
     this.store.currentCourseId.subscribe(
-      newCurrentCourseId => {this.currentCourseId = newCurrentCourseId;});
+      freshCurrentCourseId => {this.currentCourseId = freshCurrentCourseId;});
     this.backend.getCourses();
   }
 
   onSelectCourse(rec) {
-    this.store.setCurrentCourseId(rec.course_id);
+    this.store.setCurrentCourse(rec.course_id, rec.course_name);
   }
 
   onNewCourse(name) {
