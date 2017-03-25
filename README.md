@@ -6,14 +6,16 @@ This project was generated with
 [angular-cli](https://github.com/angular/angular-cli) version
 1.0.0-beta.28.3.  To use:
 
-1.  `npm run makedb` to make the database file `server/academy.db`
-    using the SQL in `server/init.sql`.
+1.  Get the backend database server from
+    <https://github.com/gvwilson/academy-sqlite>
+    1.  Clone that repository in a separate directory.
+    1.  `npm install`
+    1.  `npm run server`
+    1.  Go to <http://localhost:3654> to view some sample links.
 
-1.  `npm run server` to run the backend database server (which can
-    be found in `server/server.js` and `server/index.js`.
+1.  `npm install` in this directory.
 
-1.  `npm run start` to run the web application (best done in a
-    separate window).
+1.  `npm run start` to run the web application.
 
 1.  Go to <http://localhost:4200>.
 
