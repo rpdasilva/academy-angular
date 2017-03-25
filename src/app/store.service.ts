@@ -81,8 +81,8 @@ export class StoreService {
     this.errorMessage.next('');
   }
 
-  addClass(offering_id, class_date, class_time) {
-    const newRecord = {offering_id, class_date, class_time};
+  addClass(offering_id, class_id, class_date, class_time) {
+    const newRecord = {offering_id, class_id, class_date, class_time};
     this.classList.take(1)
       .subscribe(classes =>
 		 this.classList.next([...classes, newRecord]));

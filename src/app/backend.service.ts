@@ -87,8 +87,8 @@ export class BackendService {
     const url = `${this.base}/classes/${offering_id}`;
     const body = {class_date, class_time};
     return this.postData(url, body).subscribe(
-      ({offering_id, class_date, class_time}) =>
-	{this.store.addClass(offering_id, class_date, class_time)},
+      ({offering_id, class_id, class_date, class_time}) =>
+	{this.store.addClass(offering_id, class_id, class_date, class_time)},
       (err) => {this.store.setErrorMessage(err.statustext)}
     );
   }
