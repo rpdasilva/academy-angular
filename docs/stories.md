@@ -3,15 +3,29 @@
 ## User Interface Elements
 
 1.  *CourseList* displays all courses in order of addition to system.
+    - Ordered by class ID.
+    - Class ID is selectable.
+    - Class name is editable in place.
+    - "New Course" requires:
+      - Course name (must be unique).
 
-1.  *OfferingList* displays all offerings for currently-selected course
-    ordered by starting date.
-    -   If no course is currently selected, *OfferingList* is not shown.
+1.  *OfferingList* displays all offerings for currently-selected course.
+    - If no course is currently selected, *OfferingList* is not shown.
+    - Title displays course name.
+    - Title displays count of classes.
+    - Ordered by offering ID.
+    - Ordering ID is selectable.
+    - "New Offering" requires:
+      - nothing
 
-1.  *ClassList* displays all classes for currently-selected offering
-    ordered by date and time.
-    -   If no course or no offering is currently selected, *ClassList*
-        is not shown.
+1.  *ClassList* displays all classes for currently-selected offering.
+    - If no offering is currently selected, *ClassList* is not shown.
+    - Title displays course name.
+    - Title displays offering ID.
+    - Ordered by class ID.
+    - Class ID is selectable.
+    - "New Class" requires:
+      - Date and time (must be unique).
 
 ## Interaction Stories
 
