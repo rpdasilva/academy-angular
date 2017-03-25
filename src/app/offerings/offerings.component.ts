@@ -22,7 +22,9 @@ export class OfferingsComponent implements OnInit {
 
   ngOnInit() {
     this.store.offeringList.subscribe(
-      freshOfferings => {this.offerings = freshOfferings;});
+      freshOfferings => {
+	this.offerings = freshOfferings;
+      });
     this.store.currentCourseId.subscribe(
       freshCourseId => {
 	this.currentCourseId = freshCourseId;

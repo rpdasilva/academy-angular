@@ -61,7 +61,8 @@ export class BackendService {
     const url = `${this.base}/offerings/${course_id}`;
     const body = {};
     return this.postData(url, body).subscribe(
-      ({course_id, course_name, offering_id, num_classes}) => {this.store.addOffering(course_id, course_name, offering_id, num_classes)},
+      ({course_id, course_name, offering_id, num_classes}) =>
+	{this.store.addOffering(course_id, course_name, offering_id, num_classes)},
       (err) => {this.store.setErrorMessage(err.statusText)}
     );
   }
@@ -74,18 +75,30 @@ export class BackendService {
     );
   }
 
-  getClasses(offering_id: number): Observable<any> {
-    return this.getData(`${this.base}/classes/${offering_id}`);
+  getClasses(offering_id: number) {
+    const url = `${this.base}/classes/${offering_id}`
+    return this.getData(url).subscribe(
+      (classes) => {this.store.setClassList(classes)},
+      (err) => {this.store.setErrorMessage(err.statusText)}
+    );
   }
 
-  addClass(offering_id: number, class_date: string, class_time: string): Observable<any> {
-    return this.postData(
-      `${this.base}/classes/${offering_id}`,
-      {class_date, class_time});
+  addClass(offering_id: number, class_date: string, class_time: string) {
+    const url = `${this.base}/classes/${offering_id}`;
+    const body = {class_date, class_time};
+    return this.postData(url, body).subscribe(
+      ({offering_id, class_date, class_time}) =>
+	{this.store.addClass(offering_id, class_date, class_time)},
+      (err) => {this.store.setErrorMessage(err.statustext)}
+    );
   }
 
-  deleteClass(class_id: number): Observable<any> {
-    return this.deleteData(`${this.base}/classes/${class_id}`);
+  deleteClass(class_id: number) {
+    const url = `${this.base}/classes/${class_id}`;
+    return this.deleteData(url).subscribe(
+      (classes) => {this.store.setClassList(classes)},
+      (err) => {this.store.setErrorMessage(err.statusText)}
+    );
   }
 
   private getData(url: string): Observable<any> {

@@ -10,8 +10,8 @@ import { StoreService, NOT_SET } from '../store.service';
 export class ClassesComponent implements OnInit {
 
   classes: Object[] = [];
-  offeringId: number = NOT_SET;
-  courseName: string = '';
+  currentOfferingId: number = NOT_SET;
+  currentCourseName: string = '';
 
   newClassDate: string = '';
   newClassTime: string = '';
@@ -23,43 +23,30 @@ export class ClassesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store.currentOfferingId.subscribe((offeringId) => {
-      this.offeringId = offeringId;
-      if (offeringId == NOT_SET) {
-	this.classes = [];
-	this.offeringId = NOT_SET;
-	this.courseName = '';
-      }
-      else {
-	this.backend.getClasses(offeringId).subscribe(
-	  body => {
-	    this.classes = body;
-	    this.courseName = body[0].course_name;
-	    this.offeringId = body[0].offering_id;
-	  });
-      }
-    });
+    this.store.classList.subscribe(
+      freshClasses => {
+	this.classes = freshClasses;
+      });
+    this.store.currentOfferingId.subscribe(
+      freshOfferingId => {
+	this.currentOfferingId = freshOfferingId;
+	this.backend.getClasses(freshOfferingId);
+      });
+    this.store.currentCourseName.subscribe(
+      freshCourseName => {
+	this.currentCourseName = freshCourseName;
+      });
   }
 
   isVisible() {
-    return this.offeringId != NOT_SET;
+    return this.currentOfferingId != NOT_SET;
   }
 
   onNewClass(classDate, classTime) {
-    this.backend.addClass(this.offeringId, classDate, classTime).subscribe(
-      ({success, payload}) => {
-	if (success) {
-	  this.classes = [...this.classes, payload];
-	}
-      });
+    this.backend.addClass(this.currentOfferingId, classDate, classTime);
   }
 
   onDeleteClass(rec) {
-    this.backend.deleteClass(rec.class_id).subscribe(
-      ({success, payload}) => {
-        if (success) {
-          this.classes = payload;
-        }
-      });
+    this.backend.deleteClass(rec.class_id);
   }
 }
