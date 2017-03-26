@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
-import { StoreService} from './store.service';
+import { StoreService } from './store/store.service';
+import { CoursesActionsService } from './courses/courses-actions.service';
 
 @Injectable()
 export class BackendService {
@@ -11,14 +12,15 @@ export class BackendService {
 
   constructor(
     private http: Http,
-    private store: StoreService
+    private store: StoreService,
+    private courseActions: CoursesActionsService
   ) {
   }
 
   getCourses() {
     const url = `${this.base}/courses`;
     this.getData(url).subscribe(
-      (courses) => {this.store.setCourseList(courses)},
+      (courses) => {this.courseActions.setCourses(courses)},
       (err) => {this.store.setErrorMessage(err.statusText)}
     );
   }
@@ -27,7 +29,7 @@ export class BackendService {
     const url = `${this.base}/courses/add`;
     const body = {course_name};
     this.postData(url, body).subscribe(
-      ({course_id, course_name}) => {this.store.addCourse(course_id, course_name)},
+      ({course_id, course_name}) => {this.courseActions.addCourse(course_id, course_name)},
       (err) => {this.store.setErrorMessage(err.statusText)}
     );
   }
@@ -36,7 +38,7 @@ export class BackendService {
     const url = `${this.base}/courses/update/${course_id}`;
     const body = {course_name};
     this.postData(url, body).subscribe(
-      ({course_id, course_name}) => {this.store.updateCourse(course_id, course_name)},
+      ({course_id, course_name}) => {this.courseActions.updateCourse(course_id, course_name)},
       (err) => {this.store.setErrorMessage(err.statusText)}
     );
   }
@@ -44,7 +46,7 @@ export class BackendService {
   deleteCourse(course_id: number) {
     const url = `${this.base}/courses/${course_id}`;
     this.deleteData(url).subscribe(
-      (courses) => {this.store.setCourseList(courses)},
+      (courses) => {this.courseActions.setCourses(courses)},
       (err) => {this.store.setErrorMessage(err.statusText)}
     );
   }

@@ -8,7 +8,8 @@ import { CoursesComponent } from './courses/courses.component';
 import { OfferingsComponent } from './offerings/offerings.component';
 import { ClassesComponent } from './classes/classes.component';
 import { BackendService } from './backend.service';
-import { StoreService } from './store.service';
+import { StoreService } from './store/store.service';
+import { CoursesActionsService } from './courses/courses-actions.service';
 import { ErrmsgComponent } from './errmsg/errmsg.component';
 
 @NgModule({
@@ -26,7 +27,8 @@ import { ErrmsgComponent } from './errmsg/errmsg.component';
   ],
   providers: [
     BackendService,
-    StoreService
+    StoreService,
+    CoursesActionsService
   ],
   bootstrap: [AppComponent]
 })

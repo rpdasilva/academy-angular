@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BackendService } from '../backend.service';
-import { StoreService, NOT_SET } from '../store.service';
+import { StoreService, NOT_SET } from '../store/store.service';
+import { CoursesActionsService } from './courses-actions.service';
 
 @Component({
   selector: 'app-courses',
@@ -15,7 +16,8 @@ export class CoursesComponent implements OnInit {
 
   constructor(
     private backend: BackendService,
-    private store: StoreService
+    private store: StoreService,
+    private courseActions: CoursesActionsService
   ) {
   }
 
@@ -28,7 +30,7 @@ export class CoursesComponent implements OnInit {
   }
 
   onSelectCourse(rec) {
-    this.store.setCurrentCourse(rec.course_id, rec.course_name);
+    this.courseActions.setCurrentCourse(rec.course_id, rec.course_name);
   }
 
   onNewCourse(name) {
