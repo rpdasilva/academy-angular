@@ -1,5 +1,5 @@
 <div *ngIf="isVisible()">
-  <p>{{classes.length}} Classes for Offering {{offeringId}} of "{{courseName}}"</p>
+  <p>{{classes.length}} Classes for Offering {{currentOfferingId}} of "{{currentCourseName}}"</p>
   <table border="1">
     <tr>
       <th>Class ID</th>
@@ -16,7 +16,7 @@
   </table>
   <form>
     <button (click)="onNewClass(newClassDate.value, newClassTime.value)">New</button>
-    <input #newClassDate placeholder="start date (YYYY-MM-DD)" size="30"/>
-    <input #newClassTime placeholder="start time (HH:MM)" size="30"/>
+    <input #newClassDate placeholder="YYYY-MM-DD" size="15"/>
+    <input #newClassTime placeholder="HH:MM" size="10"/>
   </form>
 </div>
