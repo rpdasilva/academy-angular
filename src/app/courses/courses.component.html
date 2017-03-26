@@ -7,9 +7,17 @@
       <th>Delete</th>
     </tr>
     <tr *ngFor="let rec of courses">
-      <td (click)="onSelectCourse(rec)">{{rec.course_id}}</td>
-      <td><form (submit)="onEditName(rec, inputElement.value)"><input #inputElement [value]="rec.course_name" size="60" /></form></td>
-      <td><button (click)="onDeleteCourse(rec)">delete</button></td>
+      <td
+	[class.highlight]="rec.course_id == currentCourseId"
+	(click)="onSelectCourse(rec)">{{rec.course_id}}</td>
+      <td>
+	<form (submit)="onEditName(rec, inputElement.value)">
+	  <input #inputElement [value]="rec.course_name" size="60" />
+	</form>
+      </td>
+      <td>
+	<button (click)="onDeleteCourse(rec)">delete</button>
+      </td>
     </tr>
   </table>
   <form>

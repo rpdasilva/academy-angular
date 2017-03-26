@@ -7,9 +7,13 @@
       <th>Delete</th>
     </tr>
     <tr *ngFor="let rec of offerings">
-      <td (click)="onSelect(rec)">{{rec.offering_id}}</td>
+      <td
+	[class.highlight]="rec.offering_id == currentOfferingId"
+	(click)="onSelect(rec)">{{rec.offering_id}}</td>
       <td (click)="onSelect(rec)">{{rec.num_classes}}</td>
-      <td><button (click)="onDeleteOffering(rec)">delete</button></td>
+      <td>
+	<button (click)="onDeleteOffering(rec)">delete</button>
+      </td>
     </tr>
   </table>
   <p>
