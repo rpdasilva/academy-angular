@@ -16,12 +16,12 @@ export class ErrmsgComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store.errorMessage.subscribe(msg => {
+    this.store.select('errorMessage').subscribe(msg => {
       if (msg) {
-	this.message = msg;
+        this.message = msg;
       }
       else {
-	this.message = '---';
+        this.message = '---';
       }
     });
   }

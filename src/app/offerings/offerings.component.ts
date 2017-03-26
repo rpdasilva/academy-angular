@@ -21,22 +21,24 @@ export class OfferingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store.offeringList.subscribe(
+    this.store.select('offeringList').subscribe(
       freshOfferings => {
-	this.offerings = freshOfferings;
+        this.offerings = freshOfferings;
       });
-    this.store.currentCourseId.subscribe(
+    this.store.select('currentCourseId')
+      .filter(id => id > -1)
+      .subscribe(
       freshCourseId => {
-	this.currentCourseId = freshCourseId;
-	this.backend.getOfferings(freshCourseId);
+        this.currentCourseId = freshCourseId;
+        this.backend.getOfferings(freshCourseId);
       });
-    this.store.currentCourseName.subscribe(
+    this.store.select('currentCourseName').subscribe(
       freshCourseName => {
-	this.currentCourseName = freshCourseName;
+        this.currentCourseName = freshCourseName;
       });
-    this.store.currentOfferingId.subscribe(
+    this.store.select('currentOfferingId').subscribe(
       freshOfferingId => {
-	this.currentOfferingId = freshOfferingId;
+        this.currentOfferingId = freshOfferingId;
       });
   }
 
