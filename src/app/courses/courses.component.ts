@@ -10,7 +10,6 @@ import { StoreService, NOT_SET } from '../store.service';
 export class CoursesComponent implements OnInit {
 
   courses: Object[] = [];
-  newCourseName: string = '';
   currentCourseId: number = NOT_SET;
 
   constructor(

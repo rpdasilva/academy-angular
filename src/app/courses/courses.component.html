@@ -12,8 +12,8 @@
       <td><button (click)="onDeleteCourse(rec)">delete</button></td>
     </tr>
   </table>
-  <p>
-    <button (click)="onNewCourse(newCourseName)">New</button>
-    <input [(ngModel)]="newCourseName" placeholder="new course name" size="60"/>
-  </p>
+  <form>
+    <button (click)="onNewCourse(newCourseName.value)">New</button>
+    <input #newCourseName placeholder="new course name" size="60"/>
+  </form>
 </div>
