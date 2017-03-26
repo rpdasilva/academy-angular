@@ -23,18 +23,19 @@ export class ClassesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store.classList.subscribe(
+    this.store.select('classList').subscribe(
       freshClasses => {
-	this.classes = freshClasses;
+        this.classes = freshClasses;
       });
-    this.store.currentOfferingId.subscribe(
-      freshOfferingId => {
-	this.currentOfferingId = freshOfferingId;
-	this.backend.getClasses(freshOfferingId);
+    this.store.select('currentOfferingId')
+      .filter(id => id > -1)
+      .subscribe(freshOfferingId => {
+        this.currentOfferingId = freshOfferingId;
+        this.backend.getClasses(freshOfferingId);
       });
-    this.store.currentCourseName.subscribe(
+    this.store.select('currentCourseName').subscribe(
       freshCourseName => {
-	this.currentCourseName = freshCourseName;
+        this.currentCourseName = freshCourseName;
       });
   }
 

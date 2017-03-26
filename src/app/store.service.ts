@@ -6,86 +6,115 @@ export const NOT_SET = -1;
 @Injectable()
 export class StoreService {
 
-  errorMessage      = new BehaviorSubject('');
-
-  courseList        = new BehaviorSubject([]);
-  currentCourseId   = new BehaviorSubject(NOT_SET);
-  currentCourseName = new BehaviorSubject('');
-
-  offeringList      = new BehaviorSubject([]);
-  currentOfferingId = new BehaviorSubject(NOT_SET);
-
-  classList         = new BehaviorSubject([]);
+  _state$ = new BehaviorSubject<any>({
+    errorMessage: '',
+    courseList: [],
+    currentCourseId: NOT_SET,
+    currentCourseName: '',
+    offeringList: [],
+    classList: []
+  });
 
   constructor() { }
 
+  select(selector) {
+    return this._state$.map(state => state[selector])
+      .distinctUntilChanged();
+  }
+
+  updateState(merge) {
+    this._state$.take(1).subscribe(state => {
+      const newState = Object.assign({}, state, merge);
+      this._state$.next(newState);
+    });
+  }
+
   setErrorMessage(newMessage) {
-    this.errorMessage.next(newMessage);
+    this.updateState({errorMessage: newMessage});
   }
 
   setCourseList(newCourses) {
-    this.courseList.next(newCourses);
-    this.errorMessage.next('');
+    this.updateState({courseList: newCourses});
+    this.updateState({errorMessage: ''});
   }
 
   addCourse(course_id, course_name) {
     const newRecord = {course_id, course_name};
-    this.courseList.take(1)
-      .subscribe(courses =>
-		 this.courseList.next([...courses, newRecord]));
-    this.setCurrentCourse(course_id, course_name);
-    this.errorMessage.next('');
+
+    this.select('courseList').take(1)
+      .subscribe(courses => {
+        this.updateState({
+          courseList: [...courses, newRecord],
+          errorMessage: ''
+        });
+        this.setCurrentCourse(course_id, course_name);
+      });
   }
 
   updateCourse(course_id, course_name) {
-    this.courseList.take(1)
+    this.select('courseList').take(1)
       .map(courses => courses.map(c => {
-	if (c.course_id == course_id) {
-	  return {course_id, course_name};
-	}
-	else {
-	  return c;
-	}
+        if (c.course_id == course_id) {
+          return {course_id, course_name};
+        }
+        else {
+          return c;
+        }
       }))
-      .subscribe(courses => this.courseList.next(courses));
-    this.setCurrentCourse(course_id, course_name);
-    this.errorMessage.next('');
+      .subscribe(courses => {
+        this.updateState({
+          courseList: courses,
+          errorMessage: ''
+        });
+        this.setCurrentCourse(course_id, course_name);
+      });
   }
 
   setCurrentCourse(course_id, course_name) {
-    this.currentCourseId.next(course_id);
-    this.currentCourseName.next(course_name);
-    this.currentOfferingId.next(NOT_SET);
+    this.updateState({
+      currentCourseId: course_id,
+      currentCourseName: course_name,
+      currentOfferingId: NOT_SET
+    });
   }
 
   setOfferingList(newOfferings) {
-    this.offeringList.next(newOfferings);
-    this.errorMessage.next('');
+    this.updateState({
+      offeringList: newOfferings,
+      errorMessage: ''
+    });
   }
 
   addOffering(course_id, course_name, offering_id, num_classes) {
     const newRecord = {course_id, course_name, offering_id, num_classes};
-    this.offeringList.take(1)
+    this.select('offeringList').take(1)
       .subscribe(offerings =>
-		 this.offeringList.next([...offerings, newRecord]));
-    this.setCurrentOfferingId(offering_id);
-    this.errorMessage.next('');
+        this.updateState({
+          offeringList: [...offerings, newRecord],
+          currentOfferingId: offering_id,
+          errorMessage: ''
+        }));
   }
 
   setCurrentOfferingId(offering_id) {
-    this.currentOfferingId.next(offering_id);
+    this.updateState({currentOfferingId: offering_id});
   }
 
   setClassList(newClasses) {
-    this.classList.next(newClasses);
-    this.errorMessage.next('');
+    this.updateState({
+      classList: newClasses,
+      errorMessage: ''
+    });
   }
 
   addClass(offering_id, class_id, class_date, class_time) {
     const newRecord = {offering_id, class_id, class_date, class_time};
-    this.classList.take(1)
-      .subscribe(classes =>
-		 this.classList.next([...classes, newRecord]));
-    this.errorMessage.next('');
+    this.select('classList').take(1)
+      .subscribe(classes => {
+        this.updateState({
+          classList: [...classes, newRecord],
+          errorMessage: ''
+        });
+      });
   }
 }
