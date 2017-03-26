@@ -14,9 +14,9 @@
       <td><button (click)="onDeleteClass(rec)">delete</button></td>
     </tr>
   </table>
-  <p>
-    <button (click)="onNewClass(newClassDate, newClassTime)">New</button>
-    <input [(ngModel)]="newClassDate" placeholder="new class start date (YYYY-MM-DD)" size="30"/>
-    <input [(ngModel)]="newClassTime" placeholder="new class start time (HH:MM)" size="30"/>
-  </p>
+  <form>
+    <button (click)="onNewClass(newClassDate.value, newClassTime.value)">New</button>
+    <input #newClassDate placeholder="start date (YYYY-MM-DD)" size="30"/>
+    <input #newClassTime placeholder="start time (HH:MM)" size="30"/>
+  </form>
 </div>
