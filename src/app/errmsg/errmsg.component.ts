@@ -16,7 +16,7 @@ export class ErrmsgComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store.errorMessage.subscribe(msg => {
+    this.store.select('errorMessage').subscribe(msg => {
       this.message = msg;
     });
   }

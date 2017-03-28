@@ -19,9 +19,9 @@ export class CoursesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store.courseList.subscribe(
+    this.store.select('courseList').subscribe(
       freshCourses => {this.courses = freshCourses;});
-    this.store.currentCourseId.subscribe(
+    this.store.select('currentCourseId').subscribe(
       freshCurrentCourseId => {this.currentCourseId = freshCurrentCourseId;});
     this.backend.getCourses();
   }
