@@ -28,7 +28,7 @@ export class ClassesComponent implements OnInit {
         this.classes = freshClasses;
       });
     this.store.select('currentOfferingId')
-      .filter(id => id > -1)
+      .filter(id => id > -1) // FIXME: should be id => id != NOT_SET (?)
       .subscribe(freshOfferingId => {
         this.currentOfferingId = freshOfferingId;
         this.backend.getClasses(freshOfferingId);

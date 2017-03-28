@@ -28,10 +28,10 @@ export class OfferingsComponent implements OnInit {
     this.store.select('currentCourseId')
       .filter(id => id > -1)
       .subscribe(
-      freshCourseId => {
-        this.currentCourseId = freshCourseId;
-        this.backend.getOfferings(freshCourseId);
-      });
+        freshCourseId => {
+          this.currentCourseId = freshCourseId;
+          this.backend.getOfferings(freshCourseId);
+        });
     this.store.select('currentCourseName').subscribe(
       freshCourseName => {
         this.currentCourseName = freshCourseName;

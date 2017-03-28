@@ -24,7 +24,7 @@ export class BackendService {
   }
 
   addCourse(course_name: string) {
-    const url = `${this.base}/courses/add`;
+    const url = `${this.base}/courses`;
     const body = {course_name};
     this.postData(url, body).subscribe(
       ({course_id, course_name}) => {this.store.addCourse(course_id, course_name)},
@@ -62,7 +62,7 @@ export class BackendService {
     const body = {};
     return this.postData(url, body).subscribe(
       ({course_id, course_name, offering_id, num_classes}) =>
-	{this.store.addOffering(course_id, course_name, offering_id, num_classes)},
+        {this.store.addOffering(course_id, course_name, offering_id, num_classes)},
       (err) => {this.store.setErrorMessage(err.statusText)}
     );
   }
@@ -88,7 +88,7 @@ export class BackendService {
     const body = {class_date, class_time};
     return this.postData(url, body).subscribe(
       ({offering_id, class_id, class_date, class_time}) =>
-	{this.store.addClass(offering_id, class_id, class_date, class_time)},
+        {this.store.addClass(offering_id, class_id, class_date, class_time)},
       (err) => {this.store.setErrorMessage(err.statustext)}
     );
   }

@@ -12,6 +12,7 @@ export class StoreService {
     currentCourseId: NOT_SET,
     currentCourseName: '',
     offeringList: [],
+    currentOfferingId: NOT_SET,
     classList: []
   });
 
@@ -40,7 +41,6 @@ export class StoreService {
 
   addCourse(course_id, course_name) {
     const newRecord = {course_id, course_name};
-
     this.select('courseList').take(1)
       .subscribe(courses => {
         this.updateState({
@@ -51,6 +51,7 @@ export class StoreService {
       });
   }
 
+  // FIXME: rewrite the inner function as a utility.
   updateCourse(course_id, course_name) {
     this.select('courseList').take(1)
       .map(courses => courses.map(c => {
@@ -89,11 +90,11 @@ export class StoreService {
     const newRecord = {course_id, course_name, offering_id, num_classes};
     this.select('offeringList').take(1)
       .subscribe(offerings =>
-        this.updateState({
-          offeringList: [...offerings, newRecord],
-          currentOfferingId: offering_id,
-          errorMessage: ''
-        }));
+                 this.updateState({
+                   offeringList: [...offerings, newRecord],
+                   currentOfferingId: offering_id,
+                   errorMessage: ''
+                 }));
   }
 
   setCurrentOfferingId(offering_id) {
