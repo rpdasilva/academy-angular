@@ -1,4 +1,4 @@
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 
 export const NOT_SET = -1;
@@ -16,6 +16,7 @@ export const INITIAL_STATE = {
   currentCourseId: NOT_SET,
   currentCourseName: '',
   offeringList: [],
+  currentOfferingId: NOT_SET,
   classList: []
 };
 
@@ -23,7 +24,8 @@ export const actions = {
   SET_COURSES: 'SET_COURSES',
   ADD_COURSE: 'ADD_COURSE',
   UPDATE_COURSE: 'UPDATE_COURSE',
-  SET_CURRENT_COURSE: 'SET_CURRENT_COURSE'
+  SET_CURRENT_COURSE: 'SET_CURRENT_COURSE',
+  UPDATE_STATE: 'UPDATE_STATE'
 };
 
 function replaceInList(list, replacement, key) {
@@ -40,15 +42,13 @@ function replaceInList(list, replacement, key) {
 @Injectable()
 export class StoreService {
 
-  _actions$ = new Subject<Action>();
-  _state$ = new BehaviorSubject<any>(INITIAL_STATE);
+  private _actions$ = new Subject<Action>();
+  private _state$: Observable<any>;
 
   constructor() {
-    this._actions$.withLatestFrom(this._state$)
-      .subscribe(([action, state]) => {
-        const newState = this.stateReducer(state, action);
-        this._state$.next(newState);
-      });
+    this._state$ = this._actions$.scan((state, action) => {
+      return this.stateReducer(state, action);
+    }, INITIAL_STATE);
   }
 
   dispatch(action: Action) {
@@ -61,10 +61,7 @@ export class StoreService {
   }
 
   updateState(merge) {
-    this._state$.take(1).subscribe(state => {
-      const newState = Object.assign({}, state, merge);
-      this._state$.next(newState);
-    });
+    this.dispatch({ type: actions.UPDATE_STATE, payload: merge });
   }
 
   stateReducer(state, action: Action) {
@@ -107,6 +104,9 @@ export class StoreService {
           currentCourseName: course_name,
           currentOfferingId: NOT_SET
         });
+
+      case actions.UPDATE_STATE:
+        return Object.assign({}, state, action.payload);
 
       default:
         return state;
