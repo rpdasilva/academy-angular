@@ -51,17 +51,17 @@ export class StoreService {
       });
   }
 
-  // FIXME: rewrite the inner function as a utility.
   updateCourse(course_id, course_name) {
+    function replaceCourse(c) {
+      if (c.course_id == course_id) {
+        return {course_id, course_name};
+      }
+      else {
+        return c;
+      }
+    }
     this.select('courseList').take(1)
-      .map(courses => courses.map(c => {
-        if (c.course_id == course_id) {
-          return {course_id, course_name};
-        }
-        else {
-          return c;
-        }
-      }))
+      .map(courses => courses.map(replaceCourse))
       .subscribe(courses => {
         this.updateState({
           courseList: courses,
