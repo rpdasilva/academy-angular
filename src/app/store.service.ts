@@ -1,11 +1,152 @@
-import { BehaviorSubject } from 'rxjs';
+import { Subject, BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
 
 export const NOT_SET = -1;
 
+interface Action {
+  type: string;
+  payload?: any;
+}
+
+const INITIAL_STATE = {
+  errorMessage: '',
+  courseList: [], // [{courseId, courseName}, ...]
+  offeringList: [], // [{offeringId, numClasses}, ...]
+  classList: [], // [{classId, classDate, classTime}, ...]
+  currentCourseId: NOT_SET,
+  currentCourseName: '',
+  currentOfferingId: NOT_SET
+}
+
+const ACTIONS = {
+  ERROR_MESSAGE: 'ERROR_MESSAGE',
+  COURSE_ADD: 'COURSE_ADD',
+  COURSE_SET_ALL: 'COURSE_SET_ALL',
+  COURSE_SET_CURRENT: 'COURSE_SET_CURRENT',
+  COURSE_UPDATE: 'COURSE_UPDATE',
+  OFFERING_SET_ALL: 'OFFERING_SET_ALL',
+  OFFERING_ADD: 'OFFERING_ADD',
+  OFFERING_SET_CURRENT: 'OFFERING_SET_CURRENT',
+  CLASS_SET_ALL: 'CLASS_SET_ALL',
+  CLASS_ADD: 'CLASS_ADD'
+};
+
+function stateReducer(action, state) {
+  switch(action.type){
+
+  case ACTIONS.ERROR_MESSAGE: {
+    const {errorMessage} = action.payload;
+    const update = {
+      errorMessage
+    };
+    return Object.assign({}, state, update);
+  }
+
+  case ACTIONS.COURSE_ADD: {
+    const {courseId, courseName} = action.payload;
+    const update = {
+      courseList: [...state.courseList, {courseId, courseName}],
+      currentCourseId: courseId,
+      currentCourseName: courseName,
+      currentOfferingId: NOT_SET,
+      errorMessage: ''
+    };
+    return Object.assign({}, state, update);
+  }
+
+  case ACTIONS.COURSE_SET_ALL: {
+    const {courseList} = action.payload;
+    const update = {
+      courseList: courseList,
+      currentCourseId: NOT_SET,
+      currentCourseName: '',
+      currentOfferingId: NOT_SET,
+      errorMessage: ''
+    };
+    return Object.assign({}, state, update);
+  }
+
+  case ACTIONS.COURSE_SET_CURRENT: {
+    const {courseId, courseName} = action.payload;
+    const update = {
+      currentCourseId: courseId,
+      currentCourseName: courseName,
+      currentOfferingId: NOT_SET,
+      errorMessage: ''
+    };
+    return Object.assign({}, state, update);
+  }
+      
+  case ACTIONS.COURSE_UPDATE: {
+    const {courseId, courseName} = action.payload;
+    const update = {
+      courseList: state.courseList.map(c => {
+        return (c.courseId == courseId) ? {courseId, courseName} : c;
+      }),
+      currentCourseId: courseId,
+      currentCourseName: courseName,
+      errorMessage: ''
+    };
+    return Object.assign({}, state, update);
+  }
+
+  case ACTIONS.OFFERING_ADD: {
+    // FIXME: not using courseId or courseName here
+    const {courseId, courseName, offeringId, numClasses} = action.payload;
+    const update = {
+      offeringList: [...state.offeringList, {offeringId, numClasses}],
+      currentOfferingId: offeringId,
+      errorMessage: ''
+    };
+    return Object.assign({}, state, update);
+  }
+
+  case ACTIONS.OFFERING_SET_ALL: {
+    const {offeringList} = action.payload;
+    const update = {
+      offeringList: offeringList,
+      currentOfferingId: NOT_SET,
+      errorMessage: ''
+    };
+    return Object.assign({}, state, update);
+  }
+
+  case ACTIONS.OFFERING_SET_CURRENT: {
+    const {offeringId} = action.payload;
+    const update = {
+      currentOfferingId: offeringId,
+      errorMessage: ''
+    };
+    return Object.assign({}, state, update);
+  }
+
+  case ACTIONS.CLASS_SET_ALL: {
+    const {classList} = action.payload;
+    const update = {
+      classList: classList,
+      errorMessage: ''
+    };
+    return Object.assign({}, state, update);
+  }
+
+  case ACTIONS.CLASS_ADD: {
+    const {offeringId, classId, classDate, classTime} = action.payload;
+    const update = {
+      classList: [...state.classList, {classId, classDate, classTime}],
+      errorMessage: ''
+    };
+    return Object.assign({}, state, update);
+  }
+
+  default:
+    return state;
+  }
+}
+
 @Injectable()
 export class StoreService {
 
+  _action$ = new Subject();
   _state$ = new BehaviorSubject<any>({
     errorMessage: '',
     courseList: [],
@@ -16,7 +157,18 @@ export class StoreService {
     classList: []
   });
 
-  constructor() { }
+  constructor() {
+    this._action$
+      .withLatestFrom(this._state$)
+      .subscribe(([action, state]) => {
+        const newState = stateReducer(action, state);
+        this._state$.next(newState);
+    });
+  }
+
+  dispatch(action: Action) {
+    this._action$.next(action);
+  }
 
   select(selector) {
     return this._state$.map(state => state[selector])
@@ -30,92 +182,53 @@ export class StoreService {
     });
   }
 
-  setErrorMessage(newMessage) {
-    this.updateState({errorMessage: newMessage});
+  setErrorMessage(errorMessage) {
+    this.dispatch({type: ACTIONS.ERROR_MESSAGE,
+                   payload: {errorMessage}});
   }
 
-  setCourseList(newCourses) {
-    this.updateState({courseList: newCourses});
-    this.updateState({errorMessage: ''});
+  setCourseList(courseList) {
+    this.dispatch({type: ACTIONS.COURSE_SET_ALL,
+                   payload: {courseList}});
   }
 
-  addCourse(course_id, course_name) {
-    const newRecord = {course_id, course_name};
-    this.select('courseList').take(1)
-      .subscribe(courses => {
-        this.updateState({
-          courseList: [...courses, newRecord],
-          errorMessage: ''
-        });
-        this.setCurrentCourse(course_id, course_name);
-      });
+  addCourse(courseId, courseName) {
+    this.dispatch({type: ACTIONS.COURSE_ADD,
+                   payload: {courseId, courseName}});
   }
 
-  updateCourse(course_id, course_name) {
-    function replaceCourse(c) {
-      if (c.course_id == course_id) {
-        return {course_id, course_name};
-      }
-      else {
-        return c;
-      }
-    }
-    this.select('courseList').take(1)
-      .map(courses => courses.map(replaceCourse))
-      .subscribe(courses => {
-        this.updateState({
-          courseList: courses,
-          errorMessage: ''
-        });
-        this.setCurrentCourse(course_id, course_name);
-      });
+  updateCourse(courseId, courseName) {
+    this.dispatch({type: ACTIONS.COURSE_UPDATE,
+                   payload: {courseId, courseName}});
   }
 
-  setCurrentCourse(course_id, course_name) {
-    this.updateState({
-      currentCourseId: course_id,
-      currentCourseName: course_name,
-      currentOfferingId: NOT_SET
-    });
+  setCurrentCourse(courseId, courseName) {
+    this.dispatch({type: ACTIONS.COURSE_SET_CURRENT,
+                   payload: {courseId, courseName}});
   }
 
-  setOfferingList(newOfferings) {
-    this.updateState({
-      offeringList: newOfferings,
-      errorMessage: ''
-    });
+  setOfferingList(offeringList) {
+    this.dispatch({type: ACTIONS.OFFERING_SET_ALL,
+                   payload: {offeringList}});
   }
 
-  addOffering(course_id, course_name, offering_id, num_classes) {
-    const newRecord = {course_id, course_name, offering_id, num_classes};
-    this.select('offeringList').take(1)
-      .subscribe(offerings =>
-                 this.updateState({
-                   offeringList: [...offerings, newRecord],
-                   currentOfferingId: offering_id,
-                   errorMessage: ''
-                 }));
+  addOffering(courseId, courseName, offeringId, numClasses) {
+    this.dispatch({type: ACTIONS.OFFERING_ADD,
+                   payload: {courseId, courseName, offeringId, numClasses}});
   }
 
-  setCurrentOfferingId(offering_id) {
-    this.updateState({currentOfferingId: offering_id});
+  setCurrentOfferingId(offeringId) {
+    this.dispatch({type: ACTIONS.OFFERING_SET_CURRENT,
+                   payload: {offeringId}});
   }
 
-  setClassList(newClasses) {
-    this.updateState({
-      classList: newClasses,
-      errorMessage: ''
-    });
+  setClassList(classList) {
+    this.dispatch({type: ACTIONS.CLASS_SET_ALL,
+                   payload: {classList}});
   }
 
-  addClass(offering_id, class_id, class_date, class_time) {
-    const newRecord = {offering_id, class_id, class_date, class_time};
-    this.select('classList').take(1)
-      .subscribe(classes => {
-        this.updateState({
-          classList: [...classes, newRecord],
-          errorMessage: ''
-        });
-      });
+  addClass(offeringId, classId, classDate, classTime) {
+    this.dispatch({type: ACTIONS.CLASS_ADD,
+                   payload: {offeringId, classId, classDate, classTime}});
   }
 }

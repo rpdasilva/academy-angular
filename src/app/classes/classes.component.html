@@ -8,9 +8,9 @@
       <th>Delete</th>
     </tr>
     <tr *ngFor="let rec of classes">
-      <td (click)="onSelect(rec)">{{rec.class_id}}</td>
-      <td>{{rec.class_date}}</td>
-      <td>{{rec.class_time}}</td>
+      <td>{{rec.classId}}</td>
+      <td>{{rec.classDate}}</td>
+      <td>{{rec.classTime}}</td>
       <td><button (click)="onDeleteClass(rec)">delete</button></td>
     </tr>
   </table>

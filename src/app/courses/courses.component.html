@@ -8,11 +8,11 @@
     </tr>
     <tr *ngFor="let rec of courses">
       <td
-	[class.highlight]="rec.course_id == currentCourseId"
-	(click)="onSelectCourse(rec)">{{rec.course_id}}</td>
+	[class.highlight]="rec.courseId == currentCourseId"
+	(click)="onSelectCourse(rec)">{{rec.courseId}}</td>
       <td>
 	<form (submit)="onEditName(rec, inputElement.value)">
-	  <input #inputElement [value]="rec.course_name" size="60" />
+	  <input #inputElement [value]="rec.courseName" size="60" />
 	</form>
       </td>
       <td>

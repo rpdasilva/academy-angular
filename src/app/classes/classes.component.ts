@@ -24,9 +24,7 @@ export class ClassesComponent implements OnInit {
 
   ngOnInit() {
     this.store.select('classList').subscribe(
-      freshClasses => {
-        this.classes = freshClasses;
-      });
+      freshClasses => {this.classes = freshClasses;});
     this.store.select('currentOfferingId')
       .filter(id => id > -1) // FIXME: should be id => id != NOT_SET (?)
       .subscribe(freshOfferingId => {
@@ -34,9 +32,7 @@ export class ClassesComponent implements OnInit {
         this.backend.getClasses(freshOfferingId);
       });
     this.store.select('currentCourseName').subscribe(
-      freshCourseName => {
-        this.currentCourseName = freshCourseName;
-      });
+      freshCourseName => {this.currentCourseName = freshCourseName;});
   }
 
   isVisible() {
@@ -48,6 +44,6 @@ export class ClassesComponent implements OnInit {
   }
 
   onDeleteClass(rec) {
-    this.backend.deleteClass(rec.class_id);
+    this.backend.deleteClass(rec.classId);
   }
 }

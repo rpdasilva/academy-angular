@@ -23,78 +23,78 @@ export class BackendService {
     );
   }
 
-  addCourse(course_name: string) {
+  addCourse(courseName: string) {
     const url = `${this.base}/courses`;
-    const body = {course_name};
+    const body = {courseName};
     this.postData(url, body).subscribe(
-      ({course_id, course_name}) => {this.store.addCourse(course_id, course_name)},
+      ({courseId, courseName}) => {this.store.addCourse(courseId, courseName)},
       (err) => {this.store.setErrorMessage(err.statusText)}
     );
   }
 
-  changeCourseName(course_id: number, course_name: string) {
-    const url = `${this.base}/courses/update/${course_id}`;
-    const body = {course_name};
+  changeCourseName(courseId: number, courseName: string) {
+    const url = `${this.base}/courses/update/${courseId}`;
+    const body = {courseName};
     this.postData(url, body).subscribe(
-      ({course_id, course_name}) => {this.store.updateCourse(course_id, course_name)},
+      ({courseId, courseName}) => {this.store.updateCourse(courseId, courseName)},
       (err) => {this.store.setErrorMessage(err.statusText)}
     );
   }
 
-  deleteCourse(course_id: number) {
-    const url = `${this.base}/courses/${course_id}`;
+  deleteCourse(courseId: number) {
+    const url = `${this.base}/courses/${courseId}`;
     this.deleteData(url).subscribe(
       (courses) => {this.store.setCourseList(courses)},
       (err) => {this.store.setErrorMessage(err.statusText)}
     );
   }
 
-  getOfferings(course_id: number) {
-    const url = `${this.base}/offerings/${course_id}`;
+  getOfferings(courseId: number) {
+    const url = `${this.base}/offerings/${courseId}`;
     return this.getData(url).subscribe(
       (offerings) => {this.store.setOfferingList(offerings)},
       (err) => {this.store.setErrorMessage(err.statusText)}
     );
   }
 
-  addOffering(course_id: number) {
-    const url = `${this.base}/offerings/${course_id}`;
+  addOffering(courseId: number) {
+    const url = `${this.base}/offerings/${courseId}`;
     const body = {};
     return this.postData(url, body).subscribe(
-      ({course_id, course_name, offering_id, num_classes}) =>
-        {this.store.addOffering(course_id, course_name, offering_id, num_classes)},
+      ({courseId, courseName, offeringId, numClasses}) =>
+        {this.store.addOffering(courseId, courseName, offeringId, numClasses)},
       (err) => {this.store.setErrorMessage(err.statusText)}
     );
   }
 
-  deleteOffering(offering_id: number) {
-    const url = `${this.base}/offerings/${offering_id}`;
+  deleteOffering(offeringId: number) {
+    const url = `${this.base}/offerings/${offeringId}`;
     return this.deleteData(url).subscribe(
       (offerings) => {this.store.setOfferingList(offerings)},
       (err) => {this.store.setErrorMessage(err.statusText)}
     );
   }
 
-  getClasses(offering_id: number) {
-    const url = `${this.base}/classes/${offering_id}`
+  getClasses(offeringId: number) {
+    const url = `${this.base}/classes/${offeringId}`
     return this.getData(url).subscribe(
       (classes) => {this.store.setClassList(classes)},
       (err) => {this.store.setErrorMessage(err.statusText)}
     );
   }
 
-  addClass(offering_id: number, class_date: string, class_time: string) {
-    const url = `${this.base}/classes/${offering_id}`;
-    const body = {class_date, class_time};
+  addClass(offeringId: number, classDate: string, classTime: string) {
+    const url = `${this.base}/classes/${offeringId}`;
+    const body = {classDate, classTime};
     return this.postData(url, body).subscribe(
-      ({offering_id, class_id, class_date, class_time}) =>
-        {this.store.addClass(offering_id, class_id, class_date, class_time)},
+      ({offeringId, classId, classDate, classTime}) =>
+        {this.store.addClass(offeringId, classId, classDate, classTime)},
       (err) => {this.store.setErrorMessage(err.statustext)}
     );
   }
 
-  deleteClass(class_id: number) {
-    const url = `${this.base}/classes/${class_id}`;
+  deleteClass(classId: number) {
+    const url = `${this.base}/classes/${classId}`;
     return this.deleteData(url).subscribe(
       (classes) => {this.store.setClassList(classes)},
       (err) => {this.store.setErrorMessage(err.statusText)}

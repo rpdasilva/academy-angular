@@ -22,24 +22,18 @@ export class OfferingsComponent implements OnInit {
 
   ngOnInit() {
     this.store.select('offeringList').subscribe(
-      freshOfferings => {
-        this.offerings = freshOfferings;
-      });
+      offerings => {this.offerings = offerings;});
     this.store.select('currentCourseId')
-      .filter(id => id > -1)
+      .filter(id => id > -1) // FIXME: should be (id != NOT_SET) ??
       .subscribe(
-        freshCourseId => {
-          this.currentCourseId = freshCourseId;
-          this.backend.getOfferings(freshCourseId);
+        courseId => {
+          this.currentCourseId = courseId;
+          this.backend.getOfferings(courseId);
         });
     this.store.select('currentCourseName').subscribe(
-      freshCourseName => {
-        this.currentCourseName = freshCourseName;
-      });
+      courseName => {this.currentCourseName = courseName;});
     this.store.select('currentOfferingId').subscribe(
-      freshOfferingId => {
-        this.currentOfferingId = freshOfferingId;
-      });
+      offeringId => {this.currentOfferingId = offeringId;});
   }
 
   isVisible() {
@@ -47,7 +41,7 @@ export class OfferingsComponent implements OnInit {
   }
 
   onSelect(rec) {
-    this.store.setCurrentOfferingId(rec.offering_id);
+    this.store.setCurrentOfferingId(rec.offeringId);
   }
 
   onNewOffering() {
@@ -55,6 +49,6 @@ export class OfferingsComponent implements OnInit {
   }
 
   onDeleteOffering(rec) {
-    this.backend.deleteOffering(rec.offering_id);
+    this.backend.deleteOffering(rec.offeringId);
   }
 }
