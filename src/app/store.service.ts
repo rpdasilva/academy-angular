@@ -37,7 +37,7 @@ function stateReducer(action, state) {
   case ACTIONS.ERROR_MESSAGE: {
     const {errorMessage} = action.payload;
     const update = {
-      errorMessage
+      errorMessage: errorMessage
     };
     return Object.assign({}, state, update);
   }
@@ -45,11 +45,13 @@ function stateReducer(action, state) {
   case ACTIONS.COURSE_ADD: {
     const {courseId, courseName} = action.payload;
     const update = {
+      errorMessage: '',
       courseList: [...state.courseList, {courseId, courseName}],
-      currentCourseId: courseId,
-      currentCourseName: courseName,
+      currentCourseId: NOT_SET,
+      currentCourseName: '',
+      offeringList: [],
       currentOfferingId: NOT_SET,
-      errorMessage: ''
+      classList: []
     };
     return Object.assign({}, state, update);
   }
@@ -57,11 +59,13 @@ function stateReducer(action, state) {
   case ACTIONS.COURSE_SET_ALL: {
     const {courseList} = action.payload;
     const update = {
+      errorMessage: '',
       courseList: courseList,
       currentCourseId: NOT_SET,
       currentCourseName: '',
+      offeringList: [],
       currentOfferingId: NOT_SET,
-      errorMessage: ''
+      classList: []
     };
     return Object.assign({}, state, update);
   }
@@ -69,10 +73,9 @@ function stateReducer(action, state) {
   case ACTIONS.COURSE_SET_CURRENT: {
     const {courseId, courseName} = action.payload;
     const update = {
+      errorMessage: '',
       currentCourseId: courseId,
-      currentCourseName: courseName,
-      currentOfferingId: NOT_SET,
-      errorMessage: ''
+      currentCourseName: courseName
     };
     return Object.assign({}, state, update);
   }
@@ -80,23 +83,26 @@ function stateReducer(action, state) {
   case ACTIONS.COURSE_UPDATE: {
     const {courseId, courseName} = action.payload;
     const update = {
+      errorMessage: '',
       courseList: state.courseList.map(c => {
         return (c.courseId == courseId) ? {courseId, courseName} : c;
       }),
-      currentCourseId: courseId,
-      currentCourseName: courseName,
-      errorMessage: ''
+      currentCourseId: NOT_SET,
+      currentCourseName: '',
+      offeringList: [],
+      currentOfferingId: NOT_SET,
+      classList: []
     };
     return Object.assign({}, state, update);
   }
 
   case ACTIONS.OFFERING_ADD: {
-    // FIXME: not using courseId or courseName here
     const {courseId, courseName, offeringId, numClasses} = action.payload;
     const update = {
+      errorMessage: '',
       offeringList: [...state.offeringList, {offeringId, numClasses}],
-      currentOfferingId: offeringId,
-      errorMessage: ''
+      currentOfferingId: NOT_SET,
+      classList: []
     };
     return Object.assign({}, state, update);
   }
@@ -104,9 +110,10 @@ function stateReducer(action, state) {
   case ACTIONS.OFFERING_SET_ALL: {
     const {offeringList} = action.payload;
     const update = {
+      errorMessage: '',
       offeringList: offeringList,
       currentOfferingId: NOT_SET,
-      errorMessage: ''
+      classList: []
     };
     return Object.assign({}, state, update);
   }
@@ -114,8 +121,8 @@ function stateReducer(action, state) {
   case ACTIONS.OFFERING_SET_CURRENT: {
     const {offeringId} = action.payload;
     const update = {
-      currentOfferingId: offeringId,
-      errorMessage: ''
+      errorMessage: '',
+      currentOfferingId: offeringId
     };
     return Object.assign({}, state, update);
   }
@@ -132,8 +139,8 @@ function stateReducer(action, state) {
   case ACTIONS.CLASS_ADD: {
     const {offeringId, classId, classDate, classTime} = action.payload;
     const update = {
-      classList: [...state.classList, {classId, classDate, classTime}],
-      errorMessage: ''
+      errorMessage: '',
+      classList: [...state.classList, {classId, classDate, classTime}]
     };
     return Object.assign({}, state, update);
   }

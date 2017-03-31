@@ -24,11 +24,12 @@ export class OfferingsComponent implements OnInit {
     this.store.select('offeringList').subscribe(
       offerings => {this.offerings = offerings;});
     this.store.select('currentCourseId')
-      .filter(id => id > -1) // FIXME: should be (id != NOT_SET) ??
       .subscribe(
         courseId => {
           this.currentCourseId = courseId;
-          this.backend.getOfferings(courseId);
+          if (courseId != NOT_SET){
+            this.backend.getOfferings(courseId);
+          }
         });
     this.store.select('currentCourseName').subscribe(
       courseName => {this.currentCourseName = courseName;});
@@ -40,7 +41,8 @@ export class OfferingsComponent implements OnInit {
     return this.currentCourseId != NOT_SET;
   }
 
-  onSelect(rec) {
+  onSelectOffering(rec) {
+    this.backend.getClasses(rec.offeringId);
     this.store.setCurrentOfferingId(rec.offeringId);
   }
 

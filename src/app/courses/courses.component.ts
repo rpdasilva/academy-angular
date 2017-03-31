@@ -27,6 +27,7 @@ export class CoursesComponent implements OnInit {
   }
 
   onSelectCourse(rec) {
+    this.backend.getOfferings(rec.courseId);
     this.store.setCurrentCourse(rec.courseId, rec.courseName);
   }
 

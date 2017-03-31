@@ -9,8 +9,8 @@
     <tr *ngFor="let rec of offerings">
       <td
 	[class.highlight]="rec.offeringId == currentOfferingId"
-	(click)="onSelect(rec)">{{rec.offeringId}}</td>
-      <td (click)="onSelect(rec)">{{rec.numClasses}}</td>
+	(click)="onSelectOffering(rec)">{{rec.offeringId}}</td>
+      <td (click)="onSelectOffering(rec)">{{rec.numClasses}}</td>
       <td>
 	<button (click)="onDeleteOffering(rec)">delete</button>
       </td>
