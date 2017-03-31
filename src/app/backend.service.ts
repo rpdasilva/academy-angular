@@ -35,7 +35,7 @@ export class BackendService {
   changeCourseName(courseId: number, courseName: string) {
     const url = `${this.base}/courses/update/${courseId}`;
     const body = {courseName};
-    this.postData(url, body).subscribe(
+    this.putData(url, body).subscribe(
       ({courseId, courseName}) => {this.store.updateCourse(courseId, courseName)},
       (err) => {this.store.setErrorMessage(err.statusText)}
     );
@@ -107,6 +107,10 @@ export class BackendService {
 
   private postData(url: string, body: Object): Observable<any> {
     return this.http.post(url, body).map(res => res.json());
+  }
+
+  private putData(url: string, body: Object): Observable<any> {
+    return this.http.put(url, body).map(res => res.json());
   }
 
   private deleteData(url: string): Observable<any> {
