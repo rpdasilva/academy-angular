@@ -1,24 +1,7 @@
-import { Subject, BehaviorSubject } from 'rxjs';
-import { Injectable } from '@angular/core';
+import { Action, AppState, NOT_SET } from './store.types';
+import { INITIAL_STATE } from './store.initial-state';
 
-export const NOT_SET = -1;
-
-interface Action {
-  type: string;
-  payload?: any;
-}
-
-const INITIAL_STATE = {
-  errorMessage: '',
-  courseList: [], // [{courseId, courseName}, ...]
-  offeringList: [], // [{offeringId, numClasses}, ...]
-  classList: [], // [{classId, classDate, classTime}, ...]
-  currentCourseId: NOT_SET,
-  currentCourseName: '',
-  currentOfferingId: NOT_SET
-}
-
-const ACTIONS = {
+export const ACTIONS = {
   ERROR_MESSAGE: 'ERROR_MESSAGE',
   COURSE_ADD: 'COURSE_ADD',
   COURSE_SET_ALL: 'COURSE_SET_ALL',
@@ -31,7 +14,7 @@ const ACTIONS = {
   CLASS_ADD: 'CLASS_ADD'
 };
 
-function stateReducer(action, state) {
+export function rootReducer(state: AppState = INITIAL_STATE, action: Action): AppState {
   switch(action.type){
 
   case ACTIONS.ERROR_MESSAGE: {
@@ -79,7 +62,7 @@ function stateReducer(action, state) {
     };
     return Object.assign({}, state, update);
   }
-      
+
   case ACTIONS.COURSE_UPDATE: {
     const {courseId, courseName} = action.payload;
     const update = {
@@ -147,95 +130,5 @@ function stateReducer(action, state) {
 
   default:
     return state;
-  }
-}
-
-@Injectable()
-export class StoreService {
-
-  _action$ = new Subject();
-  _state$ = new BehaviorSubject<any>({
-    errorMessage: '',
-    courseList: [],
-    currentCourseId: NOT_SET,
-    currentCourseName: '',
-    offeringList: [],
-    currentOfferingId: NOT_SET,
-    classList: []
-  });
-
-  constructor() {
-    this._action$
-      .withLatestFrom(this._state$)
-      .subscribe(([action, state]) => {
-        const newState = stateReducer(action, state);
-        this._state$.next(newState);
-    });
-  }
-
-  dispatch(action: Action) {
-    this._action$.next(action);
-  }
-
-  select(selector) {
-    return this._state$.map(state => state[selector])
-      .distinctUntilChanged();
-  }
-
-  updateState(merge) {
-    this._state$.take(1).subscribe(state => {
-      const newState = Object.assign({}, state, merge);
-      this._state$.next(newState);
-    });
-  }
-
-  setErrorMessage(errorMessage) {
-    this.dispatch({type: ACTIONS.ERROR_MESSAGE,
-                   payload: {errorMessage}});
-  }
-
-  setCourseList(courseList) {
-    this.dispatch({type: ACTIONS.COURSE_SET_ALL,
-                   payload: {courseList}});
-  }
-
-  addCourse(courseId, courseName) {
-    this.dispatch({type: ACTIONS.COURSE_ADD,
-                   payload: {courseId, courseName}});
-  }
-
-  updateCourse(courseId, courseName) {
-    this.dispatch({type: ACTIONS.COURSE_UPDATE,
-                   payload: {courseId, courseName}});
-  }
-
-  setCurrentCourse(courseId, courseName) {
-    this.dispatch({type: ACTIONS.COURSE_SET_CURRENT,
-                   payload: {courseId, courseName}});
-  }
-
-  setOfferingList(offeringList) {
-    this.dispatch({type: ACTIONS.OFFERING_SET_ALL,
-                   payload: {offeringList}});
-  }
-
-  addOffering(courseId, courseName, offeringId, numClasses) {
-    this.dispatch({type: ACTIONS.OFFERING_ADD,
-                   payload: {courseId, courseName, offeringId, numClasses}});
-  }
-
-  setCurrentOfferingId(offeringId) {
-    this.dispatch({type: ACTIONS.OFFERING_SET_CURRENT,
-                   payload: {offeringId}});
-  }
-
-  setClassList(classList) {
-    this.dispatch({type: ACTIONS.CLASS_SET_ALL,
-                   payload: {classList}});
-  }
-
-  addClass(offeringId, classId, classDate, classTime) {
-    this.dispatch({type: ACTIONS.CLASS_ADD,
-                   payload: {offeringId, classId, classDate, classTime}});
   }
 }

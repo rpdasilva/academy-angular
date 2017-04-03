@@ -2,7 +2,13 @@ import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
-import { StoreService} from './store.service';
+import { StoreService} from './store/store.service';
+
+export class ActionObservable extends Observable<any> {
+  ofType(actionType: string) {
+    return this.filter((action) => action.type === actionType);
+  }
+}
 
 @Injectable()
 export class BackendService {

@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { BackendService } from '../backend.service';
-import { StoreService, NOT_SET } from '../store.service';
+import { StoreService } from '../store/store.service';
+import { NOT_SET, Course } from '../store/store.types';
+import { Store } from '@ngrx/store';
+import { AppState } from '../store/store.types';
 
 @Component({
   selector: 'app-courses',
@@ -9,26 +12,30 @@ import { StoreService, NOT_SET } from '../store.service';
 })
 export class CoursesComponent implements OnInit {
 
-  courses: Object[] = [];
+  courses: Course[] = [];
   currentCourseId: number = NOT_SET;
 
   constructor(
     private backend: BackendService,
-    private store: StoreService
+    private store: Store<AppState>
   ) {
   }
 
   ngOnInit() {
-    this.store.select('courseList').subscribe(
-      courses => {this.courses = courses;});
-    this.store.select('currentCourseId').subscribe(
-      currentCourseId => {this.currentCourseId = currentCourseId;});
+    this.store.select('courseList')
+      .subscribe((courses: Course[]) => this.courses = courses);
+
+    this.store.select('currentCourseId')
+      .subscribe((currentCourseId: number) => this.currentCourseId = currentCourseId);
+
+    this.store.subscribe(console.log);
+
     this.backend.getCourses();
   }
 
   onSelectCourse(rec) {
     this.backend.getOfferings(rec.courseId);
-    this.store.setCurrentCourse(rec.courseId, rec.courseName);
+    // this.store.setCurrentCourse(rec.courseId, rec.courseName);
   }
 
   onNewCourse(name) {

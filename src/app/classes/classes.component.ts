@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BackendService } from '../backend.service';
-import { StoreService, NOT_SET } from '../store.service';
+import { StoreService } from '../store/store.service';
+import { NOT_SET } from '../store/store.types';
 
 @Component({
   selector: 'app-classes',
